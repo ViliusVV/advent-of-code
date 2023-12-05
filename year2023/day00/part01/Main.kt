@@ -1,4 +1,4 @@
-package day01.part01
+package day00.part01
 
 import utils.readInputFileLinesTrimmed
 
