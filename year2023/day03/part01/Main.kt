@@ -59,15 +59,11 @@ class Grid2D<T>(private val width: Int = 0, private val height: Int = 0, default
 
 typealias CharGrid = Grid2D<Char>
 
-data class NumberResult (
-    val number: String,
-    val start: Int,
-    val end: Int
-)
-
 fun main() {
     val lines = readInputFileLinesTrimmed("year2023/day03/input.data")
     val grid = CharGrid.fromLines(lines)
+
+    println("Grid:\n$grid")
 
     val partNums = findPartNums(grid)
     val partNumSum = partNums.sum()
@@ -83,13 +79,12 @@ fun findPartNums(grid: CharGrid): List<Int> {
         do {
             val numResult = grid.findNextNum(y, startX)
             if(numResult != null) {
-                startX = numResult.end
-
-                if(grid.boxCollidesWithSymbol(y, numResult.start, numResult.end - 1)) {
-                    rowNums += numResult.number.toInt()
+                startX = numResult.first + numResult.second.length
+                if(grid.boxCollidesWithSymbol(y, numResult.first, startX - 1)) {
+                    rowNums += numResult.second.toInt()
                 }
             }
-        } while (numResult != null && numResult.end != grid[y].size - 1)
+        } while (numResult != null && startX != grid[y].size - 1)
 
         nums.addAll(rowNums)
 
@@ -99,24 +94,27 @@ fun findPartNums(grid: CharGrid): List<Int> {
     return nums
 }
 
-private fun CharGrid.findNextNum(y: Int, startX: Int): NumberResult? {
+private fun CharGrid.findNextNum(y: Int, startX: Int): Pair<Int, String>? {
     val row = this[y]
+    var startsAt = -1
     var number = ""
     for (x in (startX..<row.size)) {
         val char = this[x, y]
 
         if(char.isDigit()) {
+            if(number.isBlank()) startsAt = x
             number += char
 
+
             if(x == row.size - 1) {
-                return NumberResult(number, x - number.length, x)
+                return Pair(startsAt, number)
             }
         } else {
             if(number.isBlank()) {
                 continue
             }
 
-            return NumberResult(number, x - number.length, x)
+            return Pair(startsAt, number)
         }
     }
 
