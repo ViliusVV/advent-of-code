@@ -2,7 +2,62 @@ package day03.part01
 
 import utils.readInputFileLinesTrimmed
 
-typealias Grid = MutableList<List<Char>>
+class Grid2D<T>(private val width: Int = 0, private val height: Int = 0, defaultValue: T = null as T) {
+    private val grid = MutableList(height) { MutableList(width) { defaultValue } }
+    val indices: IntRange get() = grid.indices
+
+    operator fun get(y: Int): List<T> {
+        return grid[y]
+    }
+
+    operator fun get(x: Int, y: Int): T {
+        return grid[y][x]
+    }
+
+    operator fun set(x: Int, y: Int, value: T) {
+        grid[y][x] = value
+    }
+
+    operator fun set(y: Int, value: Collection<T>) {
+        grid[y] = value.toMutableList()
+    }
+
+    fun outOfBounds(x: Int, y: Int): Boolean {
+        return x < 0 || y < 0 || x >= width || y >= height
+    }
+
+    fun load(lines: List<String>) {
+        for(y in lines.indices) {
+            val line = lines[y]
+            for(x in line.indices) {
+                this[x, y] = line[x] as T
+            }
+        }
+    }
+
+    override fun toString(): String {
+        var str = ""
+        for(y in this.indices) {
+            str += "Y${y} -> "
+            for(x in this[y].indices) {
+                str += this[x, y]
+            }
+            str += "\n"
+        }
+
+        return str
+    }
+
+    companion object {
+        fun fromLines(lines: List<String>): Grid2D<Char> {
+            val grid = Grid2D<Char>(lines[0].length, lines.size)
+            grid.load(lines)
+            return grid
+        }
+    }
+}
+
+typealias CharGrid = Grid2D<Char>
 
 data class NumberResult (
     val number: String,
@@ -12,68 +67,66 @@ data class NumberResult (
 
 fun main() {
     val lines = readInputFileLinesTrimmed("year2023/day03/input.data")
-
-    val grid = toGrid(lines);
-    grid.print()
+    val grid = CharGrid.fromLines(lines)
 
     val partNums = findPartNums(grid)
     val partNumSum = partNums.sum()
     println("Part num sum: $partNumSum")
 }
 
-fun findPartNums(grid: Grid): List<Int> {
+fun findPartNums(grid: CharGrid): List<Int> {
     val nums = mutableListOf<Int>()
 
-    for(rowIdx in grid.indices) {
-        var startIdx = 0
+    for(y in grid.indices) {
+        var startX = 0
         val rowNums = mutableListOf<Int>()
         do {
-            val numResult = grid.findNextNum(rowIdx, startIdx)
+            val numResult = grid.findNextNum(y, startX)
             if(numResult != null) {
-                startIdx = numResult.end
+                startX = numResult.end
 
-                if(grid.boxCollidesWithSymbol(rowIdx, numResult.start, numResult.end - 1)) {
+                if(grid.boxCollidesWithSymbol(y, numResult.start, numResult.end - 1)) {
                     rowNums += numResult.number.toInt()
                 }
             }
-        } while (numResult != null && numResult.end != grid[rowIdx].size - 1)
+        } while (numResult != null && numResult.end != grid[y].size - 1)
 
         nums.addAll(rowNums)
 
-        println("Row $rowIdx -> nums: ${rowNums}" )
+        println("Y$y -> nums: $rowNums" )
     }
 
     return nums
 }
 
-fun Grid.findNextNum(rowIdx: Int, start: Int): NumberResult? {
-    val row = this[rowIdx]
+private fun CharGrid.findNextNum(y: Int, startX: Int): NumberResult? {
+    val row = this[y]
     var number = ""
-    for (idx in (start..<row.size)) {
-        val char = row[idx]
+    for (x in (startX..<row.size)) {
+        val char = this[x, y]
 
         if(char.isDigit()) {
             number += char
-            if(idx == row.size - 1) {
-                return NumberResult(number, idx - number.length, idx)
-            }
 
+            if(x == row.size - 1) {
+                return NumberResult(number, x - number.length, x)
+            }
         } else {
             if(number.isBlank()) {
                 continue
             }
 
-            return NumberResult(number, idx - number.length, idx)
+            return NumberResult(number, x - number.length, x)
         }
     }
 
     return null
 }
 
-fun Grid.boxCollidesWithSymbol(rowIdx: Int, start: Int, end: Int): Boolean {
-    for(rIdx in (rowIdx-1..rowIdx+1)) {
-        for (idx in (start-1..end+1)) {
-            if(isSymbol(rIdx, idx)) {
+private fun CharGrid.boxCollidesWithSymbol(yMid: Int, startX: Int, endX: Int): Boolean {
+    for(y in (yMid - 1..yMid + 1)) {
+        for (x in (startX - 1..endX + 1)) {
+            if(isSymbol(x, y)) {
                 return true
             }
         }
@@ -82,35 +135,12 @@ fun Grid.boxCollidesWithSymbol(rowIdx: Int, start: Int, end: Int): Boolean {
     return false
 }
 
-fun Grid.isSymbol(rowIdx: Int, idx: Int): Boolean {
-    if (rowIdx < 0 || idx < 0) return false
-    if(this.size <= rowIdx) return false
-    if(this[rowIdx].size <= idx) return false
+fun CharGrid.isSymbol(x: Int, y: Int): Boolean {
+    if(this.outOfBounds(x, y)) {
+        return false
+    }
 
-    val char = this[rowIdx][idx]
+    val char = this[x, y]
 
     return !(char.isDigit() || char == '.')
-}
-
-fun Grid.print() {
-    var str = ""
-    for(i in this.indices) {
-        str += "Row ${i} -> "
-        for(j in this[i].indices) {
-            str += this[i][j]
-        }
-        str += "\n"
-    }
-
-   print(str)
-}
-
-fun toGrid(lines: List<String>): Grid {
-    val grid = MutableList(lines.size){List(0) {'.'}}
-
-    for(i in lines.indices) {
-        grid[i] = lines[i].toCharArray().asList()
-    }
-
-    return grid
 }
