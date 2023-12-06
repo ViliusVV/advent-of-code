@@ -4,6 +4,7 @@ package day06.part02
 
 import utils.readInputFileLinesTrimmed
 import utils.toConcatLong
+import kotlin.math.sqrt
 import kotlin.time.measureTime
 
 data class Race(
@@ -27,16 +28,47 @@ data class RaceData (
             Race(holdTime, traveledDistance)
         }
     }
+
+    // using inequality:
+    // (raceTime - holdTime) * holdTime > recordDistance simplifies to:
+    // -holdTime^2 + raceTime * holdTime - recordDistance > 0
+    val holdTimeToWin by lazy {
+        // quadratic equation: ax^2 + bx + c = 0
+        val a = -1.0
+        val b = timeMs.toDouble()
+        val c = -recordMm.toDouble()
+
+        val delta = b * b - 4 * a * c
+        val x1 = (-b + sqrt(delta)) / (2 * a)
+        val x2 = (-b - sqrt(delta)) / (2 * a)
+
+        // round range start to the next integer and range end to the previous integer
+        val rangeStart = x1.toLong() + 1
+        val rangeEnd = x2.toLong()
+
+        // sanity check to make sure we don't go over the time limit
+        val actualEnd = if (rangeEnd > timeMs) timeMs else rangeEnd
+
+        actualEnd - rangeStart + 1
+    }
 }
 
 fun main() {
     val inputLines = readInputFileLinesTrimmed("year2023/day06/input.data")
 
     val duration = measureTime {
-        solutionDumb(inputLines)
+        solutionQuadEq(inputLines)
     }
 
     println("Completed in $duration")
+}
+
+fun solutionQuadEq(lines: List<String>) {
+    val race = parseRaceData(lines)
+    println("Races:\n${race}")
+
+    val possibleWins = race.holdTimeToWin
+    println("Possible wins: $possibleWins")
 }
 
 fun solutionDumb(lines: List<String>) {
