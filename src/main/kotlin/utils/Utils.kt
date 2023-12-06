@@ -11,3 +11,7 @@ public fun <K, V> Map<K, V>.stringify(): String {
 fun String.toLongs(): List<Long> {
     return this.split(" ").filter { it.isNotEmpty() }.map { it.toLong() }
 }
+
+fun String.toConcatLong(): Long {
+    return this.split(" ").filter { it.isNotEmpty() }.joinToString("").toLong()
+}
