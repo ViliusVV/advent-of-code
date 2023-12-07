@@ -15,3 +15,14 @@ fun String.toLongs(): List<Long> {
 fun String.toConcatLong(): Long {
     return this.split(" ").filter { it.isNotEmpty() }.joinToString("").toLong()
 }
+fun <K, V> Map<K, V>.printIt() {
+    println(this.stringify())
+}
+
+fun List<Any>.printIt() {
+    println(this.stringify())
+}
+
+fun Any?.printIt() {
+    println(this)
+}
