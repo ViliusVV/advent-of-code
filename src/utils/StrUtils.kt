@@ -20,6 +20,12 @@ fun Any?.printIt() {
     println(this)
 }
 
+// Formatting
+fun List<Any>.padRight(length: Int, char: Char = ' '): String {
+    return this.joinToString("") { any -> any.toString().padEnd(length, char) }
+}
+
+
 // =============== Parsing ===============
 fun String.toLongs(): List<Long> {
     return this.split(" ").filter { it.isNotEmpty() }.map { it.toLong() }
