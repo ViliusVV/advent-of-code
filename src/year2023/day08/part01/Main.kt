@@ -1,8 +1,8 @@
-package day08.part01
+package year2023.day08.part01
 
-import utils.readInputFileLinesTrimmed
+import utils.*
 
 fun main() {
-    val inputLines = readInputFileLinesTrimmed("year2023/day00/input.data")
-
+    val input = readInputFile()
+    input.printIt()
 }

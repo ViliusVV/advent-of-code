@@ -1,4 +1,4 @@
-package day04.part02
+package year2023.day04.part02
 
 import utils.readInputFileLinesTrimmed
 import utils.stringify

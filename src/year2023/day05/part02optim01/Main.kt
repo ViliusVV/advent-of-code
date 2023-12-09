@@ -1,4 +1,4 @@
-package day05.part02optim01
+package year2023.day05.part02optim01
 
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope

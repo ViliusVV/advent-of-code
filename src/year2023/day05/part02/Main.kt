@@ -1,4 +1,4 @@
-package day05.part02
+package year2023.day05.part02
 
 import utils.readInputFileLines
 import kotlin.time.measureTime

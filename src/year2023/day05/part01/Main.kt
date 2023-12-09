@@ -1,4 +1,4 @@
-package day05.part01
+package year2023.day05.part01
 
 import utils.readInputFileLines
 import utils.stringify

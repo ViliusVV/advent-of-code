@@ -1,6 +1,6 @@
 @file:Suppress("UnnecessaryVariable")
 
-package day06.part01
+package year2023.day06.part01
 
 import utils.readInputFileLinesTrimmed
 import utils.stringify
