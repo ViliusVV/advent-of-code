@@ -36,12 +36,7 @@ fun doVisitSequence(instructions: Instructions): Long {
         s
     }
 
-    var lcm = ghostLoopSizes[0]
-    for(i in 1..<ghostLoopSizes.size) {
-        lcm = ArithmeticUtils.lcm(lcm, ghostLoopSizes[i])
-    }
-
-    return lcm
+    return ghostLoopSizes.reduce{ acc, i -> ArithmeticUtils.lcm(acc, i) }
 }
 
 fun calculateGhostLoopSize(instructions: Instructions, startingNode: String): Long {
