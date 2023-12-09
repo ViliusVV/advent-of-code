@@ -1,6 +1,6 @@
 package year2023.day02.part01
 
-import utils.readInputFileLinesTrimmed
+import utils.readInputFile
 import utils.stringify
 
 data class Subset(
@@ -20,7 +20,7 @@ val LIMIT_SUBSET = Subset(
 )
 
 fun main() {
-    val lines = readInputFileLinesTrimmed("year2023/day02/input.data")
+    val lines = readInputFile()
 
     val games = lines.map { parseGameLine(it) }
 

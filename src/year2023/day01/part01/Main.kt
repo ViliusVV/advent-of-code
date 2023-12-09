@@ -1,9 +1,9 @@
 package year2023.day01.part01
 
-import utils.readInputFileLines
+import utils.readInputFile
 
 fun main() {
-    val lines = readInputFileLines("year2023/day01/input.data")
+    val lines = readInputFile()
 
     val calibrationValues = lines.map { lineToCalibrationValue(it) }
     val masterCalibrationValue = calibrationValues.sum()

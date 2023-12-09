@@ -2,7 +2,7 @@
 
 package year2023.day06.part02
 
-import utils.readInputFileLinesTrimmed
+import utils.readInputFile
 import utils.toConcatLong
 import kotlin.math.sqrt
 import kotlin.time.measureTime
@@ -54,7 +54,7 @@ data class RaceData (
 }
 
 fun main() {
-    val inputLines = readInputFileLinesTrimmed("year2023/day06/input.data")
+    val inputLines = readInputFile()
 
     val duration = measureTime {
         solutionQuadEq(inputLines)

@@ -1,6 +1,6 @@
 package year2023.day03.part02
 
-import utils.readInputFileLinesTrimmed
+import utils.readInputFile
 import utils.stringify
 
 class Grid2D<T>(private val width: Int = 0, private val height: Int = 0, defaultValue: T = null as T) {
@@ -71,7 +71,7 @@ data class Coord(val x: Int, val y: Int)
 typealias CharGrid = Grid2D<Char>
 
 fun main() {
-    val lines = readInputFileLinesTrimmed("year2023/day03/input.data")
+    val lines = readInputFile()
     val grid = CharGrid.fromLines(lines)
 
     println("Grid:\n$grid")

@@ -4,7 +4,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import utils.readInputFileLines
+import utils.readInputFile
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.time.measureTime
 
@@ -84,7 +84,7 @@ data class Almanac (
 
 @OptIn(DelicateCoroutinesApi::class)
 suspend fun main() {
-    val inputLines = readInputFileLines("year2023/day05/input.data")
+    val inputLines = readInputFile(trim = false)
 
     val almanac = parseAlmanac(inputLines)
 

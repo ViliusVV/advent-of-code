@@ -1,6 +1,6 @@
 package year2023.day03.part01
 
-import utils.readInputFileLinesTrimmed
+import utils.readInputFile
 
 class Grid2D<T>(private val width: Int = 0, private val height: Int = 0, defaultValue: T = null as T) {
     private val grid = MutableList(height) { MutableList(width) { defaultValue } }
@@ -60,7 +60,7 @@ class Grid2D<T>(private val width: Int = 0, private val height: Int = 0, default
 typealias CharGrid = Grid2D<Char>
 
 fun main() {
-    val lines = readInputFileLinesTrimmed("year2023/day03/input.data")
+    val lines = readInputFile()
     val grid = CharGrid.fromLines(lines)
 
     println("Grid:\n$grid")

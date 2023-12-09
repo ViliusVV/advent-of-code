@@ -1,7 +1,7 @@
 package year2023.day07.part02
 
 import utils.printIt
-import utils.readInputFileLinesTrimmed
+import utils.readInputFile
 
 typealias Card = String
 
@@ -89,7 +89,7 @@ val ALL_CARDS: List<Card> = listOf("J", "2", "3" , "4", "5", "6", "7", "8", "9",
 val HAND_TYPES = listOf(HighCard, OnePair, TwoPairs, ThreeOfAKind, FullHouse, FourOfAKind, FiveOfAKind)
 
 fun main() {
-    val inputLines = readInputFileLinesTrimmed("year2023/day07/input.data")
+    val inputLines = readInputFile()
 
     val cards = parseHands(inputLines)
     println("Cards")

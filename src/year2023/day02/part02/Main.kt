@@ -1,6 +1,6 @@
 package year2023.day02.part02
 
-import utils.readInputFileLinesTrimmed
+import utils.readInputFile
 import utils.stringify
 import kotlin.math.max
 
@@ -21,7 +21,7 @@ val LIMIT_SUBSET = Subset(
 )
 
 fun main() {
-    val lines = readInputFileLinesTrimmed("year2023/day02/input.data")
+    val lines = readInputFile()
 
     val games = lines.map { parseGameLine(it) }
 

@@ -2,7 +2,7 @@
 
 package year2023.day06.part01
 
-import utils.readInputFileLinesTrimmed
+import utils.readInputFile
 import utils.stringify
 import utils.toLongs
 
@@ -30,7 +30,7 @@ data class RaceData (
 }
 
 fun main() {
-    val inputLines = readInputFileLinesTrimmed("year2023/day06/input.data")
+    val inputLines = readInputFile()
 
     val races = parseRaceData(inputLines)
     println("Races:\n${races}")

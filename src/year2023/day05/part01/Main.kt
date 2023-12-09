@@ -1,6 +1,6 @@
 package year2023.day05.part01
 
-import utils.readInputFileLines
+import utils.readInputFile
 import utils.stringify
 
 interface MappingRange {
@@ -69,8 +69,7 @@ data class Almanac (
 }
 
 fun main() {
-    val inputLines = readInputFileLines("year2023/day05/input.data")
-
+    val inputLines = readInputFile(trim = false)
     val almanac = parseAlmanac(inputLines)
 
     val seedToLocations = almanac.seeds.associateWith { almanac.seedToLocation(it) }

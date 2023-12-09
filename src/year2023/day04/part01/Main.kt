@@ -1,6 +1,6 @@
 package year2023.day04.part01
 
-import utils.readInputFileLinesTrimmed
+import utils.readInputFile
 import utils.stringify
 import kotlin.math.pow
 
@@ -22,7 +22,7 @@ data class Card(
 }
 
 fun main() {
-    val inputLines = readInputFileLinesTrimmed("year2023/day04/input.data")
+    val inputLines = readInputFile()
 
     val cards = parseCards(inputLines)
     println("Cards:\n${cards.stringify()}")

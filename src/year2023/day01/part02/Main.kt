@@ -1,11 +1,11 @@
 package year2023.day01.part02
 
-import utils.readInputFileLines
+import utils.readInputFile
 
 val VALID_DIGIT_WORDS = listOf("one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
 
 fun main() {
-    val lines = readInputFileLines("year2023/day01/input.data")
+    val lines = readInputFile(trim = false)
 
     val calibrationValues = lines.map { lineToCalibrationValue(it) }
     val masterCalibrationValue = calibrationValues.sum()
