@@ -8,6 +8,12 @@ import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame
 import utils.interfaces.Grid
 import java.awt.Font
+import java.time.Duration
+import java.time.Instant
+
+data object TerminalUtilData {
+    var lastFlush: Instant = Instant.now()
+}
 
 fun createTerminal(width: Int = 100, height: Int = 500, fontSize: Int = 20): SwingTerminalFrame {
     val tf = DefaultTerminalFactory()
@@ -47,4 +53,20 @@ fun Terminal.putGrid(grid: Grid<Char>, xStart: Int = 0, yStart: Int = 0) {
         }
     }
     this.flush()
+}
+
+fun Terminal.waitForClose() {
+    this.flush()
+    this.readInput()
+    this.close()
+}
+
+fun Terminal.deferFlush(minSpace: Duration = Duration.parse("PT0.1S")) {
+    val now = Instant.now()
+    val diff = Duration.between(TerminalUtilData.lastFlush, now)
+    if(diff < minSpace) {
+        return
+    }
+    this.flush()
+    TerminalUtilData.lastFlush = now
 }

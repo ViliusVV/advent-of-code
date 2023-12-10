@@ -8,6 +8,11 @@ import utils.interfaces.Grid
 import utils.models.Coord
 import kotlin.math.ceil
 import kotlin.math.max
+import kotlin.random.Random
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.toJavaDuration
 
 
 class Grid2D<T>(val width: Int = 0,val height: Int = 0, defaultValue: T = null as T): Grid<T> {
@@ -100,7 +105,6 @@ fun main() {
     val grid2D = Grid2D.fromLines(inputLines)
     val grid2DPretty = grid2D.prettify()
 
-    grid2D.printIt()
     grid2DPretty.printIt()
 
     term = createTerminal(max(grid2D.width+1, 50), max(grid2D.height + 1, 25), 11)
@@ -111,8 +115,7 @@ fun main() {
 
     println("Distance: ${ceil(loop.size / 2.0).toInt()}")
 
-    term.readInput()
-    term.close()
+    term.waitForClose()
 }
 
 fun getLoopNodePositions(grid: Grid2D<Char>): List<Coord> {
@@ -141,7 +144,6 @@ fun getLoopNodePositions(grid: Grid2D<Char>): List<Coord> {
         }
 
         grid.changeColor(pos.x, pos.y, TextColor.ANSI.GREEN_BRIGHT)
-//        println("Visited: $pos")
     } while (grid[pos.x, pos.y] != 'S')
 
     loopNodePositions.add(0, loopNodePositions.removeLast())
@@ -164,8 +166,11 @@ private fun Char.getAvailableDirs(): List<Direction> {
 
 private fun Grid2D<Char>.changeColor(x: Int, y: Int, color: TextColor) {
     term.putCharAt(x, y, this[x, y].prettify(), color)
-    term.flush()
-//    Thread.sleep(0, 10000)
+    term.deferFlush(50.milliseconds.toJavaDuration())
+
+    if(Random.nextDouble() < 0.01) {
+        Thread.sleep(10)
+    }
 }
 
 fun findStart(grid: Grid2D<Char>): Coord {
