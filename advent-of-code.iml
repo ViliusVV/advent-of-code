@@ -14,5 +14,6 @@
     <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
     <orderEntry type="library" name="jetbrains.kotlinx.coroutines.core" level="project" />
     <orderEntry type="library" name="apache.commons.math3" level="project" />
+    <orderEntry type="library" name="googlecode.lanterna" level="project" />
   </component>
 </module>

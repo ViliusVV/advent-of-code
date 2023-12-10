@@ -1,5 +1,6 @@
 package year2023.day03.part02
 
+import utils.models.Coord
 import utils.readInputFile
 import utils.stringify
 
@@ -65,8 +66,6 @@ class Grid2D<T>(private val width: Int = 0, private val height: Int = 0, default
         }
     }
 }
-
-data class Coord(val x: Int, val y: Int)
 
 typealias CharGrid = Grid2D<Char>
 
