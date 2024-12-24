@@ -1,14 +1,6 @@
 import {readData} from "../../lib/file-utils.ts";
+import {parseData} from "./common.ts";
 
-export function parseData(data) {
-    const reports = [];
-    const lines = data.split("\n");
-    for(const line of lines) {
-        let levels = line.split(" ").map(l => parseInt(l));
-        reports.push(levels);
-    }
-    return reports
-}
 
 function printSafe(report) {
     console.log(`Report ${report} is safe`);
