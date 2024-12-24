@@ -1,19 +1,21 @@
 /*
     Read data from file according to the day and part
  */
-export function readData(meta: ImportMeta): string {
+export function readData(meta: ImportMeta, noPart = true): string {
     const day = meta.filename?.split("/days/")[1].split("/")[0];
 
     // first number is part
     let part = meta.filename?.split("/part-")[1];
     part = part?.match(/\d+/)?.[0];
 
-    if(!day || !part) {
-        console.error("Could not determine day or part from filename");
-        Deno.exit(1);
+    let dataFilename = "";
+    if(noPart) {
+        dataFilename = "data.txt"
+    } else {
+        dataFilename = `part-${part}.txt`
     }
 
-    let filename = `./days/${day}/part-${part}.txt`;
+    let filename = `./days/${day}/${dataFilename}`;
 
     // launching from ide uses other cwd
     if(checkIfExists(filename)) {
@@ -23,7 +25,7 @@ export function readData(meta: ImportMeta): string {
 
     console.error(`File ${filename} does not exist`);
 
-    filename = `./part-${part}.txt`;
+    filename = `./${dataFilename}`;
 
     console.log(`Reading data from ${filename}`);
     return Deno.readTextFileSync(filename);
