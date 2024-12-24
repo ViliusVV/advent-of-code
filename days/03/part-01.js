@@ -1,4 +1,4 @@
-import {readData} from "../../lib/file-utils.ts";
+import {readData} from "../../lib/deno-file-utils.ts";
 
 const MATCHER =  /mul\((\d+),(\d+)\)/g;
 

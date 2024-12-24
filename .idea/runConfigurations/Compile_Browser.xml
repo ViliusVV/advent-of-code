@@ -1,0 +1,6 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Compile Browser" type="DenoConfigurationType" inputPath="$PROJECT_DIR$/main-browser.ts" programParameters="run --watch --allow-read --allow-env --allow-write --allow-net">
+    <option name="applicationArguments" value="$FilePathRelativeToProjectRoot$" />
+    <method v="2" />
+  </configuration>
+</component>
