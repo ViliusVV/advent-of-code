@@ -1,5 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run Deno" type="DenoConfigurationType" inputPath="$PROJECT_DIR$/days/01/part-02.js" programParameters="run --allow-read">
+  <configuration default="false" name="Run Deno" type="DenoConfigurationType" inputPath="$PROJECT_DIR$/main.ts" programParameters="run --allow-read">
+    <option name="applicationArguments" value="$FilePathRelativeToProjectRoot$" />
     <method v="2" />
   </configuration>
 </component>

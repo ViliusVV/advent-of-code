@@ -1,8 +1,17 @@
-export function add(a: number, b: number): number {
-  return a + b;
-}
+console.log("AoC Entry Point");
 
-// Learn more at https://docs.deno.com/runtime/manual/examples/module_metadata#concepts
-if (import.meta.main) {
-  console.log("Add 2 + 3 =", add(2, 3));
+if(import.meta.main) {
+  const fileToRun = Deno.args[0];
+  if(!fileToRun) {
+    console.error("No file to run");
+    Deno.exit(1);
+  }
+
+  const file = `./${fileToRun}`;
+  if(!Deno.statSync(file).isFile) {
+    console.error("File does not exist");
+    Deno.exit(1);
+  }
+
+  import(file);
 }
