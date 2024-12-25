@@ -1,6 +1,6 @@
 import {logLine} from "../../lib/utils.ts";
 
-logLine("Day 04 - Part 01")
+setHeader("Day 04 - Part 01", 2)
 
 setInterval(() => {
     logLine("Hello, World222!");

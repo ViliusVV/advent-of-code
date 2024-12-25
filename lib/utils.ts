@@ -1,3 +1,5 @@
+import {isBrowser} from "./deno-file-utils.ts";
+
 export function sum(arr: number[]): number {
     return arr.reduce((sum, curr) => sum + curr, 0);
 }
@@ -24,8 +26,25 @@ export function setHeader(header: string, loc: number = 1) {
     el!.innerHTML = header;
 }
 
-export function logLine(msg: string) {
-    const output = document.querySelector("#output");
-    console.log("Log message: ", msg);
-    output?.insertAdjacentHTML("afterbegin", `<span>${msg}</span><br/>`);
+function stringify(obj: any): string {
+    if(typeof obj === "string") {
+        return obj;
+    }
+
+    if (typeof obj === "number") {
+        return obj.toString();
+    }
+
+    return JSON.stringify(obj, null, 2);
+}
+
+export function logLine(...varargs: any[]) {
+    if(isBrowser()) {
+        const output = document.querySelector("#output");
+        const stringified = varargs.map(stringify).join(" ");
+        output?.insertAdjacentHTML("afterbegin", `<span>${stringified}</span><br/>`);
+    }
+
+    console.log(...varargs);
+
 }

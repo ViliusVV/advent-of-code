@@ -1,34 +1,39 @@
 /*
     Read data from file according to the day and part
  */
-export function readData(meta: ImportMeta, noPart = true): string {
-    const {day, part} = getDayAndPart(meta.url);
-
-    let dataFilename = "";
-    if(noPart) {
-        dataFilename = "data.txt"
+export async function readData(): Promise<string> {
+    if(isBrowser()) {
+        const res = await fetch("/data.txt")
+        return await res.text()
     } else {
-        dataFilename = `part-${part}.txt`
-    }
+        const stack = new Error().stack!.split("\n")
+        const lastStack = stack[stack.length - 1]
 
-    let filename = `./days/${day}/${dataFilename}`;
+        const {day} = getDayAndPart(lastStack);
 
-    // launching from ide uses other cwd
-    if(checkIfExists(filename)) {
+        const  dataFilename = "data.txt"
+        let filename = `./days/${day}/${dataFilename}`;
+
+        // launching from ide uses other cwd
+        if(checkIfExists(filename)) {
+            console.log(`Reading data from ${filename}`);
+            return Deno.readTextFileSync(filename);
+        }
+
+        console.error(`File ${filename} does not exist`);
+
+        filename = `./${dataFilename}`;
+
         console.log(`Reading data from ${filename}`);
         return Deno.readTextFileSync(filename);
     }
+}
 
-    console.error(`File ${filename} does not exist`);
-
-    filename = `./${dataFilename}`;
-
-    console.log(`Reading data from ${filename}`);
-    return Deno.readTextFileSync(filename);
+export function isBrowser() {
+    return typeof window !== "undefined";
 }
 
 export function getDayAndPart(scriptPath: string) {
-    console.log(scriptPath);
     const day = scriptPath.split("days/")[1].split("/")[0];
 
     // first number is part
