@@ -19,8 +19,8 @@ export function getBody() {
     return document.querySelector("#body");
 }
 
-export function setHeader(header: string) {
-    const el = document.querySelector("#header");
+export function setHeader(header: string, loc: number = 1) {
+    const el = document.querySelector(`#header${loc}`);
     el!.innerHTML = header;
 }
 
