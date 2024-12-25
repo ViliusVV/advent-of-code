@@ -3,10 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        #header {
+            display: flex;
+            align-items: center;
+            background-color: #a6a3a3;
+            color: #fff;
+            text-align: center;
+        }
+        #body {
+            border: 1px solid #ccc;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(230, 230, 230, 0.6);
+            flex-grow: 0;
+        }
+        #output {
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(230, 230, 230, 0.6);
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+    </style>
     <title>AoC Entry Point</title>
 </head>
 <body>
-  <div id="output"></div>
-  <script src="{{BUNDLE_NAME}}"></script>
+    <div id="header"></div>
+    <div id="body">
+        <div>aaaa</div>
+        <div>aaaa</div>
+    </div>
+    <div id="output"></div>
+    <script src="{{BUNDLE_NAME}}"></script>
 </body>
 </html>

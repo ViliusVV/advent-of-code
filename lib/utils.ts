@@ -15,9 +15,13 @@ export function debounce(callback: Handler, ms: number) {
     };
 }
 
+export function setHeader(header: string) {
+    const el = document.querySelector("#header");
+    el!.innerHTML = header;
+}
 
 export function logLine(msg: string) {
     const output = document.querySelector("#output");
-    console.log("WS message: ", msg);
+    console.log("Log message: ", msg);
     output?.insertAdjacentHTML("afterbegin", `<code>${msg}</code><br/>`);
 }

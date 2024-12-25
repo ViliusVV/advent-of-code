@@ -61,7 +61,10 @@ async function compileCode(ctx: AppContext) {
 
     // copy script
     let scriptContent = Deno.readTextFileSync(ctx.scriptFile);
-    scriptContent = `import "../../lib/auto-reloader.js";\n\n` + scriptContent;
+    let scriptAppend = 'import {setHeader} from "../../lib/utils.ts";\n';
+    scriptAppend += 'import "../../lib/core.js";\n';
+    scriptAppend += 'setHeader("AoC");\n';
+    scriptContent = scriptAppend + scriptContent;
     const tmpScriptPath = `${ctx.scriptFile}~`;
     Deno.writeTextFileSync(tmpScriptPath, scriptContent);
 
