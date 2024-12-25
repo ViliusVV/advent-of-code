@@ -21,10 +21,10 @@ function getIndexResponse() {
     return new Response(indexContent, { headers: { "content-type": "text/html" }});
 }
 
-function getCodeResponse(path: string) {
+function getBundleResponse(path: string) {
     const processedPath = path.replace("/", "");
-    const bundlePath = getBundlePath(processedPath);
-    const code = Deno.readTextFileSync(bundlePath);
+    const filePath = `${TARGET_DIR}/${processedPath}`;
+    const code = Deno.readTextFileSync(filePath);
     return new Response(code, { headers: { "content-type": "application/javascript" }});
 }
 
@@ -42,51 +42,91 @@ function getBundleName(ctx: AppContext) {
     return `bundle-${ctx.day}-${ctx.part}.${randomHash}.js`;
 }
 
+function exctractFileName(path: string) {
+    const parts = path.split("/");
+    return parts[parts.length - 1];
+}
+
 function createTemplatedIndex(bundleName: string) {
     const indexTemplate = Deno.readTextFileSync(INDEX_TEMPLATE_PATH)
-    const processed = indexTemplate.replace("{{BUNDLE_NAME}}", bundleName);
+    const processed = indexTemplate.replace("{{BUNDLE_NAME}}", `generated/${bundleName}`);
     Deno.writeTextFileSync(INDEX_PATH, processed);
     console.log("Updated index.html");
     return processed;
 }
 
 async function compileCode(ctx: AppContext) {
-    const compiled = await bundle(ctx.scriptFile);
-    const code = compiled.code;
-
     const bundleName = getBundleName(ctx);
     const bundlePath = getBundlePath(bundleName);
 
+    // copy script
+    let scriptContent = Deno.readTextFileSync(ctx.scriptFile);
+    scriptContent = `import "../../lib/auto-reloader.js";\n\n` + scriptContent;
+    const tmpScriptPath = `${ctx.scriptFile}~`;
+    Deno.writeTextFileSync(tmpScriptPath, scriptContent);
+
+    const compiled = await bundle(tmpScriptPath);
+    const code = compiled.code;
+
     Deno.writeTextFileSync(bundlePath , code);
+    Deno.removeSync(tmpScriptPath);
     createTemplatedIndex(bundleName);
     console.log(`Compiled ${ctx.scriptFile} to ${bundlePath}`);
 }
 
-function handleRequestRoute(req: Request, ctx: AppContext): Response {
+function cleanupGenerated() {
+    console.log("Cleaning up generated files");
+    const generatedFiles = Deno.readDirSync(GENERATED_DIR);
+    for(const entry of generatedFiles) {
+        // all .js and .html files
+        if(entry.isFile && (entry.name.endsWith(".js") || entry.name.endsWith(".html"))) {
+            Deno.removeSync(`${GENERATED_DIR}/${entry.name}`);
+            console.log("Removed generated file", entry.name);
+        }
+    }
+}
+
+async function handleRequestRoute(req: Request, ctx: AppContext): Promise<Response> {
     const url = new URL(req.url);
     const path = url.pathname;
     console.log("GET:", path);
 
+    if (req.headers.get("upgrade") === "websocket") {
+        const { socket, response } = Deno.upgradeWebSocket(req);
 
-    // Index/entrypoint
-    if(path === "/" || path === "/index.html") {
-        return getIndexResponse();
-    }
-    // Handle JS bundle requests
-    else if(path.endsWith(".js")) {
-        return getCodeResponse(path);
-    }
-    // Handle data requests
-    else if(path === `/${DATA_NAME}`) {
-        return getDataResponse(ctx)
-    }
-    // Favicon
-    else if(path === "/favicon.ico") {
-        return new Response("", { status: 200 });
-    }
-    // Not Found
-    else {
-        return new Response("Not Found", { status: 404 });
+        socket.onopen = () => {
+            console.log("WebSocket client connected");
+        };
+        socket.onmessage = (event) => {
+            console.log(`WebSocket received: ${event.data}`);
+            socket.send("pong");
+        };
+        socket.onclose = () => console.log("WebSocket client disconnected");
+        socket.onerror = (error) => console.error("WebSocket error:", error);
+
+        return response;
+    } else {
+        // Index/entrypoint
+        if(path === "/" || path === "/index.html") {
+            await compileCode(ctx)
+            return getIndexResponse();
+        }
+        // Handle JS bundle requests
+        else if(path.endsWith(".js")) {
+            return getBundleResponse(path);
+        }
+        // Handle data requests
+        else if(path === `/${DATA_NAME}`) {
+            return getDataResponse(ctx)
+        }
+        // Favicon
+        else if(path === "/favicon.ico") {
+            return new Response("", { status: 200 });
+        }
+        // Not Found
+        else {
+            return new Response("Not Found", { status: 404 });
+        }
     }
 }
 
@@ -110,6 +150,7 @@ if(import.meta.main) {
     const scriptFile = Deno.args[0];
     const {day, part} = getDayAndPart(Deno.args[0]);
     validateScript(scriptFile);
+    cleanupGenerated();
 
     const ctx : AppContext = {
         part: part,

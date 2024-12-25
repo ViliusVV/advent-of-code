@@ -1,4 +1,3 @@
-console.log("Day 04 - Part 01");
+import {logLine} from "../../lib/utils.ts";
 
-
-document.body.innerHTML = "<code> Day 04 - Part 01</code>";
+logLine("Day 04 - Part 01")

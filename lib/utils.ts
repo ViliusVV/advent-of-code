@@ -14,3 +14,10 @@ export function debounce(callback: Handler, ms: number) {
         timer = setTimeout(() => callback(t), ms);
     };
 }
+
+
+export function logLine(msg: string) {
+    const output = document.querySelector("#output");
+    console.log("WS message: ", msg);
+    output?.insertAdjacentHTML("afterbegin", `<code>${msg}</code><br/>`);
+}
