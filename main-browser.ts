@@ -9,6 +9,13 @@ const INDEX_TEMPLATE_PATH = `${TARGET_DIR}/index.template.html`;
 const GENERATED_DIR = `${TARGET_DIR}/generated`;
 const INDEX_PATH = `${GENERATED_DIR}/index.html`
 
+type AppContext = {
+    scriptFile: string;
+    day: string;
+    part: string;
+    dayDir: string;
+}
+
 function getIndexResponse() {
     const indexContent = Deno.readTextFileSync(INDEX_PATH);
     return new Response(indexContent, { headers: { "content-type": "text/html" }});
@@ -26,6 +33,15 @@ function getDataResponse(ctx: AppContext) {
     return new Response(dataContent, { headers: { "content-type": "text/plain" }});
 }
 
+function getBundlePath(bundleName: string) {
+    return `${GENERATED_DIR}/${bundleName}`;
+}
+
+function getBundleName(ctx: AppContext) {
+    const randomHash = Math.random().toString(36).substring(7);
+    return `bundle-${ctx.day}-${ctx.part}.${randomHash}.js`;
+}
+
 function createTemplatedIndex(bundleName: string) {
     const indexTemplate = Deno.readTextFileSync(INDEX_TEMPLATE_PATH)
     const processed = indexTemplate.replace("{{BUNDLE_NAME}}", bundleName);
@@ -34,25 +50,16 @@ function createTemplatedIndex(bundleName: string) {
     return processed;
 }
 
-function getBundlePath(bundleName: string) {
-    return `${GENERATED_DIR}/${bundleName}`;
-}
-
-function getBundleName(ctx: AppContext) {
-    return `bundle-${ctx.day}-${ctx.part}.${ctx.compileCnt}.js`;
-}
-
 async function compileCode(ctx: AppContext) {
     const compiled = await bundle(ctx.scriptFile);
     const code = compiled.code;
 
-    ctx.bundleName = getBundleName(ctx);
-    const bundlePath = getBundlePath(ctx.bundleName);
+    const bundleName = getBundleName(ctx);
+    const bundlePath = getBundlePath(bundleName);
 
     Deno.writeTextFileSync(bundlePath , code);
-    createTemplatedIndex(ctx.bundleName );
+    createTemplatedIndex(bundleName);
     console.log(`Compiled ${ctx.scriptFile} to ${bundlePath}`);
-    return code;
 }
 
 function handleRequestRoute(req: Request, ctx: AppContext): Response {
@@ -73,6 +80,10 @@ function handleRequestRoute(req: Request, ctx: AppContext): Response {
     else if(path === `/${DATA_NAME}`) {
         return getDataResponse(ctx)
     }
+    // Favicon
+    else if(path === "/favicon.ico") {
+        return new Response("", { status: 200 });
+    }
     // Not Found
     else {
         return new Response("Not Found", { status: 404 });
@@ -81,7 +92,7 @@ function handleRequestRoute(req: Request, ctx: AppContext): Response {
 
 async function watchAndCompileFiles(ctx: AppContext) {
     const debouncedCompile = debounce(async () => {
-        ctx.code =  await compileCode(ctx)
+        await compileCode(ctx)
     }, 250);
 
     const watcher = Deno.watchFs(ctx.dayDir);
@@ -91,16 +102,6 @@ async function watchAndCompileFiles(ctx: AppContext) {
             debouncedCompile();
         }
     }
-}
-
-type AppContext = {
-    code?: string;
-    scriptFile: string;
-    day: string;
-    part: string;
-    dayDir: string;
-    compileCnt: number;
-    bundleName?: string;
 }
 
 if(import.meta.main) {
@@ -115,10 +116,9 @@ if(import.meta.main) {
         day: day,
         dayDir: `days/${day}`,
         scriptFile: scriptFile,
-        compileCnt: 0
     }
 
-    ctx.code = await compileCode(ctx);
+    await compileCode(ctx);
 
     // noinspection JSIgnoredPromiseFromCall
     watchAndCompileFiles(ctx)
