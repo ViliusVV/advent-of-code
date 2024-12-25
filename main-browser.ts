@@ -14,6 +14,7 @@ type AppContext = {
     day: string;
     part: string;
     dayDir: string;
+    sessions: WebSocket[];
 }
 
 function getIndexResponse() {
@@ -74,6 +75,9 @@ async function compileCode(ctx: AppContext) {
     Deno.writeTextFileSync(bundlePath , code);
     Deno.removeSync(tmpScriptPath);
     createTemplatedIndex(bundleName);
+
+    notifySessions(ctx);
+
     console.log(`Compiled ${ctx.scriptFile} to ${bundlePath}`);
 }
 
@@ -99,13 +103,19 @@ async function handleRequestRoute(req: Request, ctx: AppContext): Promise<Respon
 
         socket.onopen = () => {
             console.log("WebSocket client connected");
+            ctx.sessions.push(socket);
         };
-        socket.onmessage = (event) => {
-            console.log(`WebSocket received: ${event.data}`);
-            socket.send("pong");
+        socket.onmessage = (e) => {
+            console.log("WebSocket message", e.data);
+            socket.send("Server: Received: " + e.data);
+        }
+        socket.onclose = () => {
+            console.log("WebSocket client disconnected");
+            ctx.sessions = ctx.sessions.filter((s) => s !== socket);
         };
-        socket.onclose = () => console.log("WebSocket client disconnected");
-        socket.onerror = (error) => console.error("WebSocket error:", error);
+        socket.onerror = (error) => {
+            console.error("WebSocket error:", error);
+        };
 
         return response;
     } else {
@@ -147,6 +157,12 @@ async function watchAndCompileFiles(ctx: AppContext) {
     }
 }
 
+function notifySessions(ctx: AppContext) {
+    for(const session of ctx.sessions) {
+        session.send("RELOAD");
+    }
+}
+
 if(import.meta.main) {
     console.log("AoC Entry Point");
 
@@ -160,6 +176,7 @@ if(import.meta.main) {
         day: day,
         dayDir: `days/${day}`,
         scriptFile: scriptFile,
+        sessions: [],
     }
 
     await compileCode(ctx);
