@@ -1,6 +1,6 @@
 import {readData} from "../../lib/deno-file-utils.ts";
 import {parseData} from "./common.ts";
-import {removeAt} from "../../lib/utils.ts";
+import {logLine, removeAt} from "../../lib/utils.ts";
 
 
 function printSafe(report, afterRemoved) {
@@ -8,7 +8,7 @@ function printSafe(report, afterRemoved) {
     if(afterRemoved) {
         info += " after lvl removal";
     }
-    console.log(`Report ${report} is safe ${info}`);
+    logLine(`Report ${report} is safe ${info}`);
 }
 
 function printNotSafe(report, faultIdx, dec, afterRemoved) {
@@ -30,7 +30,7 @@ function printNotSafe(report, faultIdx, dec, afterRemoved) {
     }
 
     const text =  `Report ${report} is not safe: ${val1} - ${val2} = ${diff}; ${info}`;
-    console.log(text);
+    logLine(text);
 }
 
 function isTransitionSafe(report, dec, i) {
@@ -64,7 +64,7 @@ function isReportSafe(report, afterRemoved) {
                 }
             }
 
-            console.log("Could not find a safe report even after removing a level");
+            logLine("Could not find a safe report even after removing a level");
             return false;
         }
     }
@@ -73,16 +73,17 @@ function isReportSafe(report, afterRemoved) {
     return true;
 }
 
-const data = readData(import.meta);
-const reports = parseData(data);
+readData().then(data => {
+    const reports = parseData(data);
 
-console.log(reports)
+    logLine(reports)
 
-let safeReports = 0;
-for(const r of reports) {
-    if(isReportSafe(r)) {
-        safeReports++;
+    let safeReports = 0;
+    for (const r of reports) {
+        if (isReportSafe(r)) {
+            safeReports++;
+        }
     }
-}
 
-console.log("Safe reports", safeReports);
+    logLine("Safe reports", safeReports);
+});

@@ -1,4 +1,6 @@
 import {readData} from "../../lib/deno-file-utils.ts";
+import {logLine} from "../../lib/utils.ts";
+
 
 const MATCHER =  /mul\((\d+),(\d+)\)|do(?:n't)?\(\)/g;
 
@@ -39,12 +41,13 @@ function compute(operations) {
     }, 0);
 }
 
-const data = readData(import.meta);
-console.log(data);
+readData().then(data => {
+    logLine(data);
 
-const operations = parseData(data);
-console.log(operations);
+    const operations = parseData(data);
+    logLine(operations);
 
-const result = compute(operations);
-console.log(result);
+    const result = compute(operations);
+    logLine(result);
+});
 
