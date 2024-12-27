@@ -1,5 +1,7 @@
 import {isBrowser} from "./deno-file-utils.ts";
 
+const SPC = "&nbsp;";
+
 export function sum(arr: number[]): number {
     return arr.reduce((sum, curr) => sum + curr, 0);
 }
@@ -44,11 +46,17 @@ function onlyBrowser(body: () => void) {
     }
 }
 
-export function setAnswer(answer: string | number) {
+export function setAnswer(answer: string | number, answerName?: string) {
+    let msg = "Answer";
+    if(answerName) {
+        msg += ` (${answerName}) `;
+    }
+    msg += "is:";
+
     setBody(body => {
-        body.innerHTML = `<span class="glowing-font">Answer is ${answer}</span>`
+        body.innerHTML = `<span>${msg}</span>${SPC}<span class="glowing-font">${answer}</span>`
     });
-    console.log("Answer is", answer);
+    console.log(msg, answer);
 }
 
 export function setBody(bodySetter: (body: Element) => void) {

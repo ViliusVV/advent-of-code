@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run Deno" type="DenoConfigurationType" inputPath="$PROJECT_DIR$/main.ts" programParameters="run --allow-read --allow-env">
-    <option name="applicationArguments" value="$FilePathRelativeToProjectRoot$" />
+  <configuration default="false" name="Run Deno" type="DenoConfigurationType" inputPath="$PROJECT_DIR$/ts/main.ts" programParameters="run --allow-read --allow-env" workingDirectory="$PROJECT_DIR$/ts">
+    <option name="applicationArguments" value="$FilePath$" />
     <method v="2" />
   </configuration>
 </component>

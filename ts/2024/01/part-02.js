@@ -28,8 +28,7 @@ readData().then(data => {
 
     const similarity = sum(scores);
 
-    logOutput("Similarity", similarity);
-    setAnswer(similarity)
+    setAnswer(similarity, "Similarity");
 });
 
 
