@@ -174,7 +174,7 @@ if(import.meta.main) {
     const ctx : AppContext = {
         part: part,
         day: day,
-        dayDir: `days/${day}`,
+        dayDir: `2024/${day}`,
         scriptFile: scriptFile,
         sessions: [],
     }

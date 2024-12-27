@@ -12,7 +12,7 @@ export async function readData(): Promise<string> {
         const {day} = getDayAndPart(lastStack);
 
         const  dataFilename = "data.txt"
-        let filename = `./days/${day}/${dataFilename}`;
+        let filename = `./2024/${day}/${dataFilename}`;
 
         // launching from ide uses other cwd
         if(checkIfExists(filename)) {
@@ -34,11 +34,10 @@ export function isBrowser() {
 }
 
 export function getDayAndPart(scriptPath: string) {
-    const day = scriptPath.split("days/")[1].split("/")[0];
-
-    // first number is part
-    let part = scriptPath?.split("/part-")[1];
-    part = part?.match(/\d+/)?.[0]!;
+    const splitPath = scriptPath.split("/")
+    const partPart = splitPath[splitPath.length - 1].split("part-")[1]
+    const day = splitPath[splitPath.length - 2]
+    const part = partPart?.match(/\d+/)?.[0]!;
     return {day, part};
 }
 
