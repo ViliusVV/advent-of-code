@@ -1,6 +1,12 @@
 import {isBrowser} from "./deno-file-utils.ts";
+import Module = WebAssembly.Module;
 
 const SPC = "&nbsp;";
+
+export type AoCModule = {
+    default: (data: string) => void;
+};
+
 
 export function sum(arr: number[]): number {
     return arr.reduce((sum, curr) => sum + curr, 0);

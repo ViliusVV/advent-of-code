@@ -1,5 +1,5 @@
 import { bundle } from "https://deno.land/x/emit/mod.ts";
-import {getDayAndPart, validateScript} from "./lib/deno-file-utils.ts";
+import {getPathParts, validateScript} from "./lib/deno-file-utils.ts";
 import {debounce} from "./lib/utils.ts";
 
 const DATA_NAME = "data.txt";
@@ -167,7 +167,7 @@ if(import.meta.main) {
     console.log("AoC Entry Point");
 
     const scriptFile = Deno.args[0];
-    const {day, part} = getDayAndPart(Deno.args[0]);
+    const {day, part} = getPathParts(Deno.args[0]);
     validateScript(scriptFile);
     cleanupGenerated();
 

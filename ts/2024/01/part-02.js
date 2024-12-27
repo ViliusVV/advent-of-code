@@ -1,4 +1,3 @@
-import  {readData} from "../../lib/deno-file-utils.ts";
 import {parseData} from "./common.ts";
 import {logOutput, setAnswer, sum} from "../../lib/utils.ts";
 
@@ -11,7 +10,7 @@ function countOccurrences(rightArr) {
     return counts;
 }
 
-readData().then(data => {
+export default (data) => {
     const locations = parseData(data);
 
     const counts = countOccurrences(locations.right);
@@ -29,6 +28,5 @@ readData().then(data => {
     const similarity = sum(scores);
 
     setAnswer(similarity, "Similarity");
-});
-
+}
 
