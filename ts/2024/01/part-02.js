@@ -10,7 +10,7 @@ function countOccurrences(rightArr) {
     return counts;
 }
 
-export default (data) => {
+export function partRunMain(data) {
     const locations = parseData(data);
 
     const counts = countOccurrences(locations.right);

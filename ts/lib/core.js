@@ -1,6 +1,23 @@
 import { setHeader } from "./utils.ts";
+import {readData} from "./deno-file-utils.ts";
 
 document.addEventListener("DOMContentLoaded", function () {
+    setupReload()
+    loadAocScript();
+})
+
+function loadAocScript() {
+    // noinspection NpmUsedModulesInstalled
+    import("aoc").then(({partRunMain}) => {
+        console.log("AOC script loaded");
+        readData().then(data => {
+            console.log("Data loaded");
+            partRunMain(data);
+        });
+    });
+}
+
+function setupReload() {
     console.log("Page ready and reloader script loaded");
     setHeader("WSConnection NOT CONNECTED", 3);
 
@@ -41,4 +58,4 @@ document.addEventListener("DOMContentLoaded", function () {
     websocket.onerror = (e) => {
         setHeader(`WS Err: ${e.data}`, 3);
     };
-})
+}

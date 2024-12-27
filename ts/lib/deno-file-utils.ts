@@ -1,5 +1,6 @@
 export async function readData(): Promise<string> {
     if(isBrowser()) {
+        console.log("Loading data from /data.txt");
         const res = await fetch("/data.txt")
         return await res.text()
     }

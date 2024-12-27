@@ -9,13 +9,13 @@ if(import.meta.main) {
 
   import(scriptFile).then((module: AoCModule) => {
     console.log("Script loaded");
-    if(!module.default) {
-      console.log("'default(data: string)' function not implemented in module");
+    if(!module.partRunMain) {
+      console.log("'main(data: string)' function not implemented in module");
       Deno.exit(1);
     }
 
     const data = denoReadData(scriptFile)
-    module.default(data);
+    module.partRunMain(data);
   });
   console.log(`Script ${scriptFile} loading...`);
 }

@@ -4,7 +4,7 @@ import Module = WebAssembly.Module;
 const SPC = "&nbsp;";
 
 export type AoCModule = {
-    default: (data: string) => void;
+    partRunMain: (data: string) => void;
 };
 
 
