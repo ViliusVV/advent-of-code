@@ -1,6 +1,6 @@
 import  {readData} from "../../lib/deno-file-utils.ts";
 import {parseData} from "./common.ts";
-import {logLine, sum} from "../../lib/utils.ts";
+import {logOutput, setAnswer, sum} from "../../lib/utils.ts";
 
 function countOccurrences(rightArr) {
     const counts = {};
@@ -15,7 +15,7 @@ readData().then(data => {
     const locations = parseData(data);
 
     const counts = countOccurrences(locations.right);
-    logLine("Counts", counts);
+    logOutput("Counts", counts);
 
     const scores = []
     for (let num of locations.left) {
@@ -24,11 +24,12 @@ readData().then(data => {
         }
     }
 
-    logLine("Scores", scores);
+    logOutput("Scores", scores);
 
     const similarity = sum(scores);
 
-    logLine("Similarity", similarity);
+    logOutput("Similarity", similarity);
+    setAnswer(similarity)
 });
 
 

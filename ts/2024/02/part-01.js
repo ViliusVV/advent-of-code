@@ -1,10 +1,10 @@
 import {readData} from "../../lib/deno-file-utils.ts";
 import {parseData} from "./common.ts";
-import {logLine} from "../../lib/utils.ts";
+import {logOutput} from "../../lib/utils.ts";
 
 
 function printSafe(report) {
-    logLine(`Report ${report} is safe`);
+    logOutput(`Report ${report} is safe`);
 }
 
 function printNotSafe(report, faultIdx, dec) {
@@ -21,7 +21,7 @@ function printNotSafe(report, faultIdx, dec) {
         info = "Diff is not in range 1-3";
     }
     const text =  `Report ${report} is not safe: ${val1} - ${val2} = ${diff}; ${info}`;
-    logLine(text);
+    logOutput(text);
 }
 
 function isReportSafe(report) {
@@ -47,7 +47,7 @@ function isReportSafe(report) {
 readData().then(data => {
     const reports = parseData(data);
 
-    logLine(reports)
+    logOutput(reports)
 
     let safeReports = 0;
     for(const r of reports) {
@@ -56,6 +56,6 @@ readData().then(data => {
         }
     }
 
-    logLine("Safe reports", safeReports);
+    logOutput("Safe reports", safeReports);
 });
 

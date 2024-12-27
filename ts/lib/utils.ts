@@ -38,13 +38,32 @@ function stringify(obj: any): string {
     return JSON.stringify(obj, null, 2);
 }
 
-export function logLine(...varargs: any[]) {
+function onlyBrowser(body: () => void) {
     if(isBrowser()) {
+        body()
+    }
+}
+
+export function setAnswer(answer: string | number) {
+    setBody(body => {
+        body.innerHTML = `<span class="glowing-font">Answer is ${answer}</span>`
+    });
+    console.log("Answer is", answer);
+}
+
+export function setBody(bodySetter: (body: Element) => void) {
+    onlyBrowser(() => {
+        const body = document.querySelector("#body")!;
+        bodySetter(body)
+    })
+}
+
+export function logOutput(...varargs: any[]) {
+    onlyBrowser(() => {
         const output = document.querySelector("#output");
         const stringified = varargs.map(stringify).join(" ");
         output?.insertAdjacentHTML("afterbegin", `<span>${stringified}</span><br/>`);
-    }
+    });
 
     console.log(...varargs);
-
 }

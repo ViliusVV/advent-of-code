@@ -1,6 +1,6 @@
 import {readData} from "../../lib/deno-file-utils.ts";
 import {parseData} from "./common.ts";
-import {logLine, removeAt} from "../../lib/utils.ts";
+import {logOutput, removeAt} from "../../lib/utils.ts";
 
 
 function printSafe(report, afterRemoved) {
@@ -8,7 +8,7 @@ function printSafe(report, afterRemoved) {
     if(afterRemoved) {
         info += " after lvl removal";
     }
-    logLine(`Report ${report} is safe ${info}`);
+    logOutput(`Report ${report} is safe ${info}`);
 }
 
 function printNotSafe(report, faultIdx, dec, afterRemoved) {
@@ -30,7 +30,7 @@ function printNotSafe(report, faultIdx, dec, afterRemoved) {
     }
 
     const text =  `Report ${report} is not safe: ${val1} - ${val2} = ${diff}; ${info}`;
-    logLine(text);
+    logOutput(text);
 }
 
 function isTransitionSafe(report, dec, i) {
@@ -64,7 +64,7 @@ function isReportSafe(report, afterRemoved) {
                 }
             }
 
-            logLine("Could not find a safe report even after removing a level");
+            logOutput("Could not find a safe report even after removing a level");
             return false;
         }
     }
@@ -76,7 +76,7 @@ function isReportSafe(report, afterRemoved) {
 readData().then(data => {
     const reports = parseData(data);
 
-    logLine(reports)
+    logOutput(reports)
 
     let safeReports = 0;
     for (const r of reports) {
@@ -85,5 +85,5 @@ readData().then(data => {
         }
     }
 
-    logLine("Safe reports", safeReports);
+    logOutput("Safe reports", safeReports);
 });
