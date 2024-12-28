@@ -1,4 +1,4 @@
-import {readData} from "../../lib/deno-file-utils.ts";
+import {readData} from "../../lib/deno-utils.ts";
 import {parseData} from "./common.ts";
 import {logOutput, setAnswer} from "../../lib/utils.ts";
 

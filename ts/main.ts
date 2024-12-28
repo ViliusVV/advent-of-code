@@ -1,4 +1,4 @@
-import {denoReadData, readData, validateScript} from "./lib/deno-file-utils.ts";
+import {denoReadData, readData, validateScript} from "./lib/deno-utils.ts";
 import {AoCModule} from "./lib/utils.ts";
 
 console.log("AoC Entry Point");

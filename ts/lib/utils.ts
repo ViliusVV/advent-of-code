@@ -1,6 +1,3 @@
-import {isBrowser} from "./deno-file-utils.ts";
-import Module = WebAssembly.Module;
-
 const SPC = "&nbsp;";
 
 export type AoCModule = {
@@ -24,6 +21,17 @@ export function debounce(callback: Handler, ms: number) {
         timer = setTimeout(() => callback(t), ms);
     };
 }
+
+export function isBrowser() {
+    return typeof window !== "undefined";
+}
+
+export async function browserReadData(): Promise<string> {
+    console.log("Loading data from /data.txt");
+    const res = await fetch("/data.txt")
+    return await res.text();
+}
+
 
 export function getBody() {
     return document.querySelector("#body");

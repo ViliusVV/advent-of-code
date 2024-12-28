@@ -1,12 +1,3 @@
-export async function readData(): Promise<string> {
-    if(isBrowser()) {
-        console.log("Loading data from /data.txt");
-        const res = await fetch("/data.txt")
-        return await res.text()
-    }
-    throw new Error("Not implemented. Must use browser");
-}
-
 export function denoReadData(scriptPath: string): string {
     const {year, day} = getPathParts(scriptPath);
 
@@ -25,10 +16,6 @@ export function denoReadData(scriptPath: string): string {
 
     console.log(`Reading data from ${filename}`);
     return Deno.readTextFileSync(filename);
-}
-
-export function isBrowser() {
-    return typeof window !== "undefined";
 }
 
 export function getPathParts(scriptPath: string) {

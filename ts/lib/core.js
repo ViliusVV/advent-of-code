@@ -1,5 +1,4 @@
-import { setHeader } from "./utils.ts";
-import {readData} from "./deno-file-utils.ts";
+import {browserReadData, setHeader} from "./utils.ts";
 
 document.addEventListener("DOMContentLoaded", function () {
     setupReload()
@@ -10,7 +9,7 @@ function loadAocScript() {
     // noinspection NpmUsedModulesInstalled
     import("aoc").then(({partRunMain}) => {
         console.log("AOC script loaded");
-        readData().then(data => {
+        browserReadData().then(data => {
             console.log("Data loaded");
             partRunMain(data);
         });

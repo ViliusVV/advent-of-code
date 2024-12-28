@@ -1,5 +1,5 @@
 import { bundle } from "https://deno.land/x/emit/mod.ts";
-import {getPathParts, validateScript} from "./lib/deno-file-utils.ts";
+import {getPathParts, validateScript} from "./lib/deno-utils.ts";
 import {debounce} from "./lib/utils.ts";
 
 const DATA_NAME = "data.txt";
