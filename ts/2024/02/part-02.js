@@ -1,7 +1,5 @@
-import {readData} from "../../lib/deno-file-utils.ts";
 import {parseData} from "./common.ts";
-import {logOutput, removeAt} from "../../lib/utils.ts";
-
+import {logOutput, removeAt, setAnswer} from "../../lib/utils.ts";
 
 function printSafe(report, afterRemoved) {
     let info = " "
@@ -73,7 +71,7 @@ function isReportSafe(report, afterRemoved) {
     return true;
 }
 
-readData().then(data => {
+export function partRunMain(data) {
     const reports = parseData(data);
 
     logOutput(reports)
@@ -85,5 +83,5 @@ readData().then(data => {
         }
     }
 
-    logOutput("Safe reports", safeReports);
-});
+    setAnswer(safeReports, "Safe reports");
+}

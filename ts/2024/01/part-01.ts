@@ -1,6 +1,5 @@
-import {readData} from "../../lib/deno-file-utils.ts";
 import {parseData} from "./common.ts";
-import {logOutput} from "../../lib/utils.ts";
+import {setAnswer} from "../../lib/utils.ts";
 
 function findDistances(locations: {left: number[], right: number[]}) {
     const distances: number[] = [];
@@ -12,7 +11,7 @@ function findDistances(locations: {left: number[], right: number[]}) {
     return distances;
 }
 
-readData().then(data => {
+export function partRunMain(data: string) {
     const locations = parseData(data);
 
     locations.left.sort();
@@ -21,5 +20,5 @@ readData().then(data => {
     const distances = findDistances(locations);
     const sum = distances.reduce((sum, curr) => sum + curr, 0);
 
-    logOutput("Sum of distances is", sum);
-});
+    setAnswer(sum, "Sum of distances");
+}

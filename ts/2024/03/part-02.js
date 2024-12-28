@@ -1,6 +1,4 @@
-import {readData} from "../../lib/deno-file-utils.ts";
-import {logOutput} from "../../lib/utils.ts";
-
+import {logOutput, setAnswer} from "../../lib/utils.ts";
 
 const MATCHER =  /mul\((\d+),(\d+)\)|do(?:n't)?\(\)/g;
 
@@ -41,13 +39,12 @@ function compute(operations) {
     }, 0);
 }
 
-readData().then(data => {
+export function partRunMain(data) {
     logOutput(data);
 
     const operations = parseData(data);
     logOutput(operations);
 
     const result = compute(operations);
-    logOutput(result);
-});
-
+    setAnswer(result, "Sum of operations");
+}
