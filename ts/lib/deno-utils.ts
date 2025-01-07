@@ -39,7 +39,7 @@ function checkIfExists(path: string) {
     }
 }
 
-export function validateScript(scriptPath: string) {
+export function validateScript(scriptPath?: string) {
     if(!scriptPath) {
         console.error("No file to run");
         Deno.exit(1);

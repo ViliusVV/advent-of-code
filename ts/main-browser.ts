@@ -167,10 +167,10 @@ if(import.meta.main) {
     console.log("AoC Entry Point");
 
     const scriptFile = Deno.args[0];
-    const {day, part} = getPathParts(Deno.args[0]);
     validateScript(scriptFile);
     cleanupGenerated();
 
+    const {day, part} = getPathParts(Deno.args[0]);
     const ctx : AppContext = {
         part: part,
         day: day,
