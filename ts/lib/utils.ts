@@ -1,7 +1,7 @@
 const SPC = "&nbsp;";
 
 export type AoCModule = {
-    partRunMain: (data: string) => void;
+    aocMain: (data: string) => void;
 };
 
 

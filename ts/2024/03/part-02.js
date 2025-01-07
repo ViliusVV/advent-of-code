@@ -39,7 +39,7 @@ function compute(operations) {
     }, 0);
 }
 
-export function partRunMain(data) {
+export function aocMain(data) {
     logOutput(data);
 
     const operations = parseData(data);

@@ -21,7 +21,7 @@ function compute(operations) {
     return operations.reduce((acc, op) => acc + op.a * op.b, 0);
 }
 
-export function partRunMain(data) {
+export function aocMain(data) {
     logOutput(data);
 
     const operations = parseData(data);
