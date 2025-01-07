@@ -71,7 +71,7 @@ function isReportSafe(report, afterRemoved) {
     return true;
 }
 
-export function partRunMain(data) {
+export function aocMain(data) {
     const reports = parseData(data);
 
     logOutput(reports)

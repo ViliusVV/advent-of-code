@@ -19,7 +19,9 @@ export function denoReadData(scriptPath: string): string {
 }
 
 export function getPathParts(scriptPath: string) {
-    const splitPath = scriptPath.split("/")
+    const pathSeparator = Deno.build.os === "windows" ? "\\" : "/";
+
+    const splitPath = scriptPath.split(pathSeparator);
     const partPart = splitPath[splitPath.length - 1].split("part-")[1]
     const day = splitPath[splitPath.length - 2]
     const year = splitPath[splitPath.length - 3]

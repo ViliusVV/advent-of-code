@@ -11,7 +11,7 @@ function findDistances(locations: {left: number[], right: number[]}) {
     return distances;
 }
 
-export function partRunMain(data: string) {
+export function aocMain(data: string) {
     const locations = parseData(data);
 
     locations.left.sort();

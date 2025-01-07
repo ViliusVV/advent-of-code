@@ -7,11 +7,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function loadAocScript() {
     // noinspection NpmUsedModulesInstalled
-    import("aoc").then(({partRunMain}) => {
+    import("aoc").then(({aocMain}) => {
         console.log("AOC script loaded");
         browserReadData().then(data => {
             console.log("Data loaded");
-            partRunMain(data);
+            aocMain(data);
         });
     });
 }
