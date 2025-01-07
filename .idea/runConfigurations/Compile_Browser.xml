@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Compile Browser" type="DenoConfigurationType" inputPath="$PROJECT_DIR$/main-browser.ts" programParameters="run --allow-read --allow-env --allow-write --allow-net">
+  <configuration default="false" name="Compile Browser" type="DenoConfigurationType" inputPath="$MAVEN_REPOSITORY$" programParameters="run --allow-read --allow-env --allow-write --allow-net">
     <option name="applicationArguments" value="$FilePathRelativeToProjectRoot$" />
     <method v="2" />
   </configuration>
