@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ide-set-file" type="NodeJSConfigurationType" application-parameters="$FilePath$" path-to-js-file="ide-set-file.js" working-dir="$PROJECT_DIR$/ts">
+    <method v="2" />
+  </configuration>
+</component>

@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="IDE run" type="BunRunConfiguration">
+    <option name="program" value="ide-run.ts" />
+    <option name="workingDirectory" value="$PROJECT_DIR$/ts" />
+    <method v="2">
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="ide-set-file" run_configuration_type="NodeJSConfigurationType" />
+    </method>
+  </configuration>
+</component>

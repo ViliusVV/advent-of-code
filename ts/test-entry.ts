@@ -1,10 +1,10 @@
 import {logOutput} from "./lib/utils.ts";
+import {UnsecuredJWT} from "jose";
 
 const aaa = "aaa"
 console.log(aaa)
 logOutput("outaaa")
 
-import { UnsecuredJWT } from "jose/jwt/unsecured.ts"
 
 
 const produceJWT = new UnsecuredJWT()
