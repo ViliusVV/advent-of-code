@@ -8,7 +8,5 @@
     "skipLibCheck": true,
     "allowImportingTsExtensions": true,
   },
-  "include": ["./**/*"],
-  "exclude": ["node_modules",
-    "../main-browser.ts", "./main.ts", "./lib/deno-utils.ts", "./bundle.ts"]
+  "include": ["./**/*.ts", "./**/*.js"],
 }

@@ -4,25 +4,25 @@ import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
 import {writeTextFileSync} from "./lib/server-utils.ts";
 
-async function bundleEntryPoint(entry: string, output: string) {
+async function bundleEntryPoint(entry: string[], output: string) {
     try {
         // Step 1: Create Rollup bundle
         const bundle = await rollup({
-            input: entry, // Entry point to your application
+            input: entry,
             plugins: [
                 nodeResolve({
                     extensions: [".js", ".ts"], // Resolve JS and TS files
                 }),
                 commonjs(),
-                typescript(), // Compile TypeScript files
+                typescript({tsconfig: "./tsconfig-rollup.json"}), // Compile TypeScript files
             ],
         });
 
         // Step 2: Generate output
         const { output: generatedOutput } = await bundle.generate({
-            file: output,
-            format: "esm", // Output format compatible with Deno
-            sourcemap: true, // Optional: Sourcemaps for debugging
+            dir: output,
+            format: "esm",
+            sourcemap: true,
         });
 
         // Step 3: Write output file
@@ -34,7 +34,7 @@ async function bundleEntryPoint(entry: string, output: string) {
 
                 // Write the source map
                 if (chunkOrAsset.map) {
-                    const mapFileName = `${output}.map`;
+                    const mapFileName = `${chunkOrAsset.fileName}.map`;
                     console.log(`Writing source map: ${mapFileName}`);
                     writeTextFileSync(mapFileName, chunkOrAsset.map.toString());
                 }
@@ -55,8 +55,8 @@ async function bundleEntryPoint(entry: string, output: string) {
 // Usage Example
 const entryPoint = "./2024/01/part-01.ts"; // Replace with your actual entry point
 // const entryPoint = "./test-entry.ts"; // Replace with your actual entry point
-const outputBundle = "./test-output.js"; // Replace with your desired output file
+const outputBundle = "./output"; // Replace with your desired output file
 
 console.log("Bundling entry point:", entryPoint);
-await bundleEntryPoint(entryPoint, outputBundle);
+await bundleEntryPoint([entryPoint, "./lib/core.js"], outputBundle);
 console.log("Bundling complete");
