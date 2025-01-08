@@ -2,7 +2,7 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 
 
-export async function denoReadData(scriptPath: string): Promise<string> {
+export function bunReadData(scriptPath: string): string {
     const {year, day} = getPathParts(scriptPath);
 
     const  dataFilename = "data.txt"
