@@ -30,11 +30,11 @@ async function bundleEntryPoint(entry: string[], output: string) {
             if (chunkOrAsset.type === "chunk") {
                 console.log(`Writing chunk: ${chunkOrAsset.fileName}`);
                 // Write the JavaScript bundle
-                writeTextFileSync(output, chunkOrAsset.code);
+                writeTextFileSync(`${output}/${chunkOrAsset.fileName}`, chunkOrAsset.code);
 
                 // Write the source map
                 if (chunkOrAsset.map) {
-                    const mapFileName = `${chunkOrAsset.fileName}.map`;
+                    const mapFileName = `${output}/${chunkOrAsset.fileName}.map`;
                     console.log(`Writing source map: ${mapFileName}`);
                     writeTextFileSync(mapFileName, chunkOrAsset.map.toString());
                 }
@@ -55,7 +55,7 @@ async function bundleEntryPoint(entry: string[], output: string) {
 // Usage Example
 const entryPoint = "./2024/01/part-01.ts"; // Replace with your actual entry point
 // const entryPoint = "./test-entry.ts"; // Replace with your actual entry point
-const outputBundle = "./output"; // Replace with your desired output file
+const outputBundle = "./target/generated"; // Replace with your desired output file
 
 console.log("Bundling entry point:", entryPoint);
 await bundleEntryPoint([entryPoint, "./lib/core.js"], outputBundle);

@@ -16,7 +16,7 @@ function getIndexResponse() {
 
 function getBundleResponse(path: string) {
     const processedPath = path.replace("/", "");
-    const filePath = `${TARGET_DIR}/${processedPath}`;
+    const filePath = `${GENERATED_DIR}/${processedPath}`;
     const code = readTextFileSync(filePath);
     return new Response(code, { headers: { "content-type": "application/javascript" }});
 }
@@ -122,8 +122,8 @@ async function handleRequestRoute(req: Request, ctx: AppContext): Promise<Respon
             return getIndexResponse();
         }
         // Handle JS bundle requests
-        else if(path.endsWith(".js")) {
-            return getBundleResponse(path);
+        else if(path.startsWith("/bundles")) {
+            return getBundleResponse(path.replace("/bundles", ""));
         }
         // Handle data requests
         else if(path === `/${DATA_NAME}`) {
@@ -143,6 +143,7 @@ async function handleRequestRoute(req: Request, ctx: AppContext): Promise<Respon
 async function watchAndCompileFiles(ctx: AppContext) {
     const debouncedCompile = debounce(async () => {
         // await compileCode(ctx)
+        createTemplatedIndex("/aa.js");
     }, 250);
 
     const watcher = fs.watch(import.meta.dir, (event, filename) => {
@@ -161,7 +162,7 @@ function notifySessions(ctx: AppContext) {
 
 function main() {
     console.log("AoC Entry Point");
-    cleanupGenerated();
+    // cleanupGenerated();
 
     const ctx : AppContext = {
         sessions: [],
