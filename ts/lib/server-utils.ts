@@ -1,6 +1,9 @@
 import * as fs from "node:fs";
 import * as os from "node:os";
 
+export type AppContext = {
+    sessions: WebSocket[];
+}
 
 export function bunReadData(scriptPath: string): string {
     const {year, day} = getPathParts(scriptPath);
@@ -12,6 +15,15 @@ export function bunReadData(scriptPath: string): string {
     return fs.readFileSync(filename, "utf-8");
 }
 
+export function extractPartPaths(path: string) {
+    // /2024/01/01
+    const splitPath = path.split("/");
+    const year = splitPath[1];
+    const day = splitPath[2];
+    const part = splitPath[3];
+    return {year, day, part};
+}
+
 export function getPathParts(scriptPath: string) {
     const pathSeparator = os.platform() === "win32" ? "\\" : "/";
 
@@ -21,6 +33,14 @@ export function getPathParts(scriptPath: string) {
     const year = splitPath[splitPath.length - 3]
     const part = partPart?.match(/\d+/)?.[0]!;
     return {year, day, part};
+}
+
+export function readTextFileSync(file: string) {
+    return fs.readFileSync(file, "utf-8").toString().trim();
+}
+
+export function writeTextFileSync(file: string, content: string) {
+    fs.writeFileSync(file, content, { encoding: "utf-8" });
 }
 
 function isFile(path?: string) {

@@ -1,4 +1,4 @@
-import {bunReadData, validateScript} from "./lib/bun-utils.ts";
+import {bunReadData, validateScript} from "./lib/server-utils.ts";
 import type {AoCModule} from "./lib/utils.ts";
 import fs from "fs";
 
