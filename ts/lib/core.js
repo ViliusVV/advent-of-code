@@ -7,13 +7,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function loadAocScript() {
     // noinspection NpmUsedModulesInstalled
-    import("aoc").then(({aocMain}) => {
-        console.log("AOC script loaded");
-        browserReadData().then(data => {
-            console.log("Data loaded");
-            aocMain(data);
-        });
-    });
+    // import("aoc").then(({aocMain}) => {
+    //     console.log("AOC script loaded");
+    //     browserReadData().then(data => {
+    //         console.log("Data loaded");
+    //         aocMain(data);
+    //     });
+    // });
 }
 
 function setupReload() {
