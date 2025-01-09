@@ -26,10 +26,15 @@ export function isBrowser() {
     return typeof window !== "undefined";
 }
 
-export async function browserReadData(): Promise<string> {
-    console.log("Loading data from /data.txt");
-    const res = await fetch("/data.txt")
+export async function browserReadData(path: string): Promise<string> {
+    const dataPath = `/${path}/data.txt`;
+    console.log(`Loading data from ${dataPath}`);
+    const res = await fetch(dataPath);
     return await res.text();
+}
+
+export function getScriptPath(year: number, day: number, part: number) {
+    return `/${year}/${day}/${part}.js`;
 }
 
 
@@ -65,7 +70,7 @@ export function extractPartPaths(path: string) {
     const splitPath = path.split("/");
     const year = splitPath[1];
     const day = splitPath[2];
-    const part = splitPath[3];
+    const part = splitPath[3].replace(".js", "");
     return {year, day, part};
 }
 

@@ -6,7 +6,7 @@ import {writeTextFileSync} from "./server-utils";
 
 let rollupCache: RollupCache | undefined;
 
-export async function bundleScripts(entryPoints: string[], outputDir: string) {
+export async function bundleScripts(entryPoints: string[], outputDir: string, preserverDir = false) {
     console.log(`Bundling: ${entryPoints} to ${outputDir}`);
     try {
         // Bundle

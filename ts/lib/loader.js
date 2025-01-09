@@ -1,26 +1,25 @@
-import {extractPartPaths, setHeader} from "./utils";
+import {browserReadData, extractPartPaths, getScriptPath, setHeader} from "./utils";
 
 document.addEventListener("DOMContentLoaded", function () {
-    setupReload()
+    // setupReload()
     loadAocScript();
 })
 
 function loadAocScript() {
-    // noinspection NpmUsedModulesInstalled
-    // import("aoc").then(({aocMain}) => {
-    //     console.log("AOC script loaded");
-    //     browserReadData().then(data => {
-    //         console.log("Data loaded");
-    //         aocMain(data);
-    //     });
-    // });
-
     // Load aoc part script from the server according to current url
-    const url = new URL(location.href);
-    const path = url.pathname;
+    const path = new URL(location.href).pathname;
     const {year, day, part} = extractPartPaths(path);
-    const scriptPath = `/bundles/${year}/${day}/part-${part}.js`;
+    const scriptPath = getScriptPath(year, day, part);
     setHeader(`Loading script: ${scriptPath}`, 2);
+
+    // Load the script and run the aocMain function
+    import(scriptPath).then(({aocMain}) => {
+        console.log("AOC script loaded");
+        browserReadData(path).then(data => {
+            console.log("Data loaded");
+            aocMain(data);
+        });
+    });
 }
 
 function setupReload() {

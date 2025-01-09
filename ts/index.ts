@@ -1,11 +1,10 @@
 import {
     type AppContext,
-    extractPartPaths,
     readTextFileSync, type RequestContext,
 } from "./lib/server-utils";
 import fs from "fs";
 import {bundleScripts} from "./lib/bundler";
-import {debounce} from "./lib/utils";
+import {debounce, extractPartPaths} from "./lib/utils";
 
 const DATA_NAME = "data.txt";
 
@@ -14,14 +13,15 @@ const INDEX_TEMPLATE_PATH = `${TARGET_DIR}/index.template.html`;
 const GENERATED_DIR = `${TARGET_DIR}/generated`;
 const INDEX_PATH = `${GENERATED_DIR}/index.html`
 
+const compiledScripts = new Map<string, boolean>();
+
 function getIndexResponse() {
     const indexContent = readTextFileSync(INDEX_PATH);
     return new Response(indexContent, { headers: { "content-type": "text/html" }});
 }
 
-function getBundleResponse(path: string) {
-    const processedPath = path.replace("/", "");
-    const filePath = `${GENERATED_DIR}/${processedPath}`;
+async function getBundleResponse(path: string) {
+    const filePath = `${GENERATED_DIR}/${path}`;
     const code = readTextFileSync(filePath);
     return new Response(code, { headers: { "content-type": "application/javascript" }});
 }
@@ -31,14 +31,14 @@ function getDataResponse(ctx: AppContext) {
     return new Response(dataContent, { headers: { "content-type": "text/plain" }});
 }
 
-function getScriptPath(ctx: RequestContext) {
+function getSourceScriptPath(ctx: RequestContext) {
     const {year, day, part} = extractPartPaths(ctx.path);
     return `${year}/${day}/part-${part}.ts`;
 }
 
-function exctractFileName(path: string) {
-    const parts = path.split("/");
-    return parts[parts.length - 1];
+function getBundleScriptPath(ctx: RequestContext) {
+    const {year, day, part} = extractPartPaths(ctx.path);
+    return `${year}/${day}/part-${part}.js`;
 }
 
 function createTemplatedIndex(bundleName: string) {
@@ -50,8 +50,8 @@ function createTemplatedIndex(bundleName: string) {
 }
 
 async function compileScript(reqCtx: RequestContext) {
-    const scriptPath = getScriptPath(reqCtx);
-    const entryPoints = [scriptPath, "./lib/core.ts"];
+    const scriptPath = getSourceScriptPath(reqCtx);
+    const entryPoints = [scriptPath, "./lib/loader.js"];
 
     await bundleScripts(entryPoints, GENERATED_DIR);
 
@@ -76,6 +76,11 @@ async function handleRequestRoute(req: Request, ctx: AppContext): Promise<Respon
     const url = new URL(req.url);
     const path = url.pathname;
     console.log("GET:", path);
+
+    const reqCtx = {
+        appCtx: ctx,
+        path,
+    }
 
     // if (req.headers.get("upgrade") === "websocket") {
     //     const { socket, response } = Deno.upgradeWebSocket(req);
@@ -102,19 +107,26 @@ async function handleRequestRoute(req: Request, ctx: AppContext): Promise<Respon
     if(path === "/" || path === "/index.html") {
         return getIndexResponse();
     }
-    // Handle /2024/01/01 html and /2024/01/01/data.txt
-    else if(path.match(/\/\d{4}\/\d{2}\/\d{2}/)) {
-        if(path.endsWith(DATA_NAME)) {
-            return getDataResponse(ctx);
-        } else {
-            const {year, day, part} = extractPartPaths(path);
-            console.log("Year", year, "Day", day, "Part", part);
-            return getIndexResponse();
-        }
+    // Handle /2024/01/01 (dissalow trailing slash)
+    else if(path.match(/^\/\d{4}\/\d{2}\/\d{2}$/)) {
+        const {year, day, part} = extractPartPaths(path);
+        console.log("Year", year, "Day", day, "Part", part);
+        return getIndexResponse();
     }
-    // Handle JS bundle requests
+    // Handle /2024/01/01/data.txt
+    else if(path.match(/^\/\d{4}\/\d{2}\/\d{2}\/data\.txt$/)) {
+        return getDataResponse(reqCtx.appCtx);
+    }
+    // Handle /2024/01/01.js
+    else if(path.match(/^\/\d{4}\/\d{2}\/\d{2}\.js$/)) {
+        const srcPath = getSourceScriptPath(reqCtx);
+        const bundlePath = getBundleScriptPath(reqCtx);
+        await bundleScripts([srcPath], GENERATED_DIR);
+
+        return getBundleResponse(bundlePath);
+    }
     else if(path.startsWith("/bundles")) {
-        return getBundleResponse(path.replace("/bundles", ""));
+        return getBundleResponse(path.replace("/bundles/", ""));
     }
     // Favicon
     else if(path === "/favicon.ico") {
@@ -147,7 +159,7 @@ function notifySessions(ctx: AppContext) {
     }
 }
 
-function main() {
+async function main() {
     console.log("AoC Entry Point");
     // cleanupGenerated();
 
@@ -157,8 +169,12 @@ function main() {
 
 
     createTemplatedIndex("/aa.js");
-    // noinspection JSIgnoredPromiseFromCall
+
+    // noinspection ES6MissingAwait
     watchAndCompileFiles(ctx)
+
+    // noinspection ES6MissingAwait
+    bundleScripts(["./lib/loader.js"], GENERATED_DIR);
 
 
     console.log("AoC Browser Entry Point");
@@ -170,5 +186,5 @@ function main() {
 }
 
 if(import.meta.main) {
-    main();
+    await main();
 }
