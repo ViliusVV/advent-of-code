@@ -1,4 +1,4 @@
-import {logOutput, setAnswer} from "../../lib/utils.ts";
+import {logOutput, setAnswer} from "../../lib/utils";
 
 const MATCHER =  /mul\((\d+),(\d+)\)|do(?:n't)?\(\)/g;
 

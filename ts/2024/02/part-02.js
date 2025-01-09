@@ -1,5 +1,5 @@
-import {parseData} from "./common.ts";
-import {logOutput, removeAt, setAnswer} from "../../lib/utils.ts";
+import {parseData} from "./common";
+import {logOutput, removeAt, setAnswer} from "../../lib/utils";
 
 function printSafe(report, afterRemoved) {
     let info = " "

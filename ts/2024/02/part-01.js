@@ -1,6 +1,5 @@
-import {readData} from "../../lib/deno-utils.ts";
-import {parseData} from "./common.ts";
-import {logOutput, setAnswer} from "../../lib/utils.ts";
+import {parseData} from "./common";
+import {logOutput, setAnswer} from "../../lib/utils";
 
 
 function printSafe(report) {

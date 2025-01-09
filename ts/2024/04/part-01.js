@@ -1,4 +1,4 @@
-import {logOutput} from "../../lib/utils.ts";
+import {logOutput} from "../../lib/utils";
 
 setHeader("Day 04 - Part 01", 2)
 

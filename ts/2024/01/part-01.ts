@@ -1,5 +1,5 @@
-import {parseData} from "./common.ts";
-import {setAnswer} from "../../lib/utils.ts";
+import {parseData} from "./common";
+import {setAnswer} from "../../lib/utils";
 
 function findDistances(locations: {left: number[], right: number[]}) {
     const distances: number[] = [];

@@ -1,8 +1,8 @@
-import {rollup} from "rollup";
+import {rollup, type RollupCache} from "rollup";
 import {nodeResolve} from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
-import {writeTextFileSync} from "./server-utils.ts";
+import {writeTextFileSync} from "./server-utils";
 
 let rollupCache: RollupCache | undefined;
 
