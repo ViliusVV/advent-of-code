@@ -5,6 +5,11 @@ export type AppContext = {
     sessions: WebSocket[];
 }
 
+export type RequestContext = {
+    appCtx: AppContext;
+    path: string;
+}
+
 export function bunReadData(scriptPath: string): string {
     const {year, day} = getPathParts(scriptPath);
 
@@ -13,15 +18,6 @@ export function bunReadData(scriptPath: string): string {
 
     console.log(`Reading data from ${filename}`);
     return fs.readFileSync(filename, "utf-8");
-}
-
-export function extractPartPaths(path: string) {
-    // /2024/01/01
-    const splitPath = path.split("/");
-    const year = splitPath[1];
-    const day = splitPath[2];
-    const part = splitPath[3];
-    return {year, day, part};
 }
 
 export function getPathParts(scriptPath: string) {
@@ -41,6 +37,10 @@ export function readTextFileSync(file: string) {
 
 export function writeTextFileSync(file: string, content: string) {
     fs.writeFileSync(file, content, { encoding: "utf-8" });
+}
+
+export function removeSync(path: string, recursive = false) {
+    fs.rmSync(path, { recursive: recursive });
 }
 
 function isFile(path?: string) {

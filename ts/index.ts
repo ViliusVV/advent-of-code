@@ -1,6 +1,11 @@
-import { bundle } from "https://deno.land/x/emit/mod.ts";
-import {getPathParts, validateScript} from "./lib/deno-utils.ts";
-import {debounce} from "./lib/utils.ts";
+import {
+    type AppContext,
+    extractPartPaths,
+    readTextFileSync, type RequestContext,
+} from "./lib/server-utils";
+import fs from "fs";
+import {bundleScripts} from "./lib/bundler";
+import {debounce} from "./lib/utils";
 
 const DATA_NAME = "data.txt";
 
@@ -9,38 +14,26 @@ const INDEX_TEMPLATE_PATH = `${TARGET_DIR}/index.template.html`;
 const GENERATED_DIR = `${TARGET_DIR}/generated`;
 const INDEX_PATH = `${GENERATED_DIR}/index.html`
 
-type AppContext = {
-    scriptFile: string;
-    day: string;
-    part: string;
-    dayDir: string;
-    sessions: WebSocket[];
-}
-
 function getIndexResponse() {
-    const indexContent = Deno.readTextFileSync(INDEX_PATH);
+    const indexContent = readTextFileSync(INDEX_PATH);
     return new Response(indexContent, { headers: { "content-type": "text/html" }});
 }
 
 function getBundleResponse(path: string) {
     const processedPath = path.replace("/", "");
-    const filePath = `${TARGET_DIR}/${processedPath}`;
-    const code = Deno.readTextFileSync(filePath);
+    const filePath = `${GENERATED_DIR}/${processedPath}`;
+    const code = readTextFileSync(filePath);
     return new Response(code, { headers: { "content-type": "application/javascript" }});
 }
 
 function getDataResponse(ctx: AppContext) {
-    const dataContent = Deno.readTextFileSync(`${ctx.dayDir}/${DATA_NAME}`);
+    const dataContent = readTextFileSync(`${ctx.dayDir}/${DATA_NAME}`);
     return new Response(dataContent, { headers: { "content-type": "text/plain" }});
 }
 
-function getBundlePath(bundleName: string) {
-    return `${GENERATED_DIR}/${bundleName}`;
-}
-
-function getBundleName(ctx: AppContext) {
-    const randomHash = Math.random().toString(36).substring(7);
-    return `bundle-${ctx.day}-${ctx.part}.${randomHash}.js`;
+function getScriptPath(ctx: RequestContext) {
+    const {year, day, part} = extractPartPaths(ctx.path);
+    return `${year}/${day}/part-${part}.ts`;
 }
 
 function exctractFileName(path: string) {
@@ -49,46 +42,32 @@ function exctractFileName(path: string) {
 }
 
 function createTemplatedIndex(bundleName: string) {
-    const indexTemplate = Deno.readTextFileSync(INDEX_TEMPLATE_PATH)
+    const indexTemplate = readTextFileSync(INDEX_TEMPLATE_PATH)
     const processed = indexTemplate.replace("{{BUNDLE_NAME}}", `generated/${bundleName}`);
-    Deno.writeTextFileSync(INDEX_PATH, processed);
+    fs.writeFileSync(INDEX_PATH, processed, { encoding: "utf-8" });
     console.log("Updated index.html");
     return processed;
 }
 
-async function compileCode(ctx: AppContext) {
-    const bundleName = getBundleName(ctx);
-    const bundlePath = getBundlePath(bundleName);
+async function compileScript(reqCtx: RequestContext) {
+    const scriptPath = getScriptPath(reqCtx);
+    const entryPoints = [scriptPath, "./lib/core.ts"];
 
-    // copy script
-    let scriptContent = Deno.readTextFileSync(ctx.scriptFile);
-    let scriptAppend = 'import {setHeader} from "../../lib/utils.ts";\n';
-    scriptAppend += 'import "../../lib/core.js";\n';
-    scriptAppend += 'setHeader("AoC");\n';
-    scriptContent = scriptAppend + scriptContent;
-    const tmpScriptPath = `${ctx.scriptFile}~`;
-    Deno.writeTextFileSync(tmpScriptPath, scriptContent);
+    await bundleScripts(entryPoints, GENERATED_DIR);
 
-    const compiled = await bundle(tmpScriptPath);
-    const code = compiled.code;
+    notifySessions(reqCtx.appCtx);
 
-    Deno.writeTextFileSync(bundlePath , code);
-    Deno.removeSync(tmpScriptPath);
-    createTemplatedIndex(bundleName);
-
-    notifySessions(ctx);
-
-    console.log(`Compiled ${ctx.scriptFile} to ${bundlePath}`);
+    console.log(`Compiled ${scriptPath}`);
 }
 
 function cleanupGenerated() {
     console.log("Cleaning up generated files");
-    const generatedFiles = Deno.readDirSync(GENERATED_DIR);
+    const generatedFiles = fs.readdirSync(GENERATED_DIR);
     for(const entry of generatedFiles) {
         // all .js and .html files
-        if(entry.isFile && (entry.name.endsWith(".js") || entry.name.endsWith(".html"))) {
-            Deno.removeSync(`${GENERATED_DIR}/${entry.name}`);
-            console.log("Removed generated file", entry.name);
+        if(entry.endsWith(".js") || entry.endsWith(".html")) {
+            fs.readFileSync(`${GENERATED_DIR}/${entry}`);
+            console.log("Removed generated file", entry);
         }
     }
 }
@@ -98,63 +77,68 @@ async function handleRequestRoute(req: Request, ctx: AppContext): Promise<Respon
     const path = url.pathname;
     console.log("GET:", path);
 
-    if (req.headers.get("upgrade") === "websocket") {
-        const { socket, response } = Deno.upgradeWebSocket(req);
-
-        socket.onopen = () => {
-            console.log("WebSocket client connected");
-            ctx.sessions.push(socket);
-        };
-        socket.onmessage = (e) => {
-            console.log("WebSocket message", e.data);
-            socket.send("Server: Received: " + e.data);
-        }
-        socket.onclose = () => {
-            console.log("WebSocket client disconnected");
-            ctx.sessions = ctx.sessions.filter((s) => s !== socket);
-        };
-        socket.onerror = (error) => {
-            console.error("WebSocket error:", error);
-        };
-
-        return response;
-    } else {
-        // Index/entrypoint
-        if(path === "/" || path === "/index.html") {
-            await compileCode(ctx)
+    // if (req.headers.get("upgrade") === "websocket") {
+    //     const { socket, response } = Deno.upgradeWebSocket(req);
+    //
+    //     socket.onopen = () => {
+    //         console.log("WebSocket client connected");
+    //         ctx.sessions.push(socket);
+    //     };
+    //     socket.onmessage = (e: any) => {
+    //         console.log("WebSocket message", e.data);
+    //         socket.send("Server: Received: " + e.data);
+    //     }
+    //     socket.onclose = () => {
+    //         console.log("WebSocket client disconnected");
+    //         ctx.sessions = ctx.sessions.filter((s) => s !== socket);
+    //     };
+    //     socket.onerror = (err: Error) => {
+    //         console.error("WebSocket error:", err);
+    //     };
+    //
+    //     return response;
+    // } else {
+    // Index/entrypoint
+    if(path === "/" || path === "/index.html") {
+        return getIndexResponse();
+    }
+    // Handle /2024/01/01 html and /2024/01/01/data.txt
+    else if(path.match(/\/\d{4}\/\d{2}\/\d{2}/)) {
+        if(path.endsWith(DATA_NAME)) {
+            return getDataResponse(ctx);
+        } else {
+            const {year, day, part} = extractPartPaths(path);
+            console.log("Year", year, "Day", day, "Part", part);
             return getIndexResponse();
         }
-        // Handle JS bundle requests
-        else if(path.endsWith(".js")) {
-            return getBundleResponse(path);
-        }
-        // Handle data requests
-        else if(path === `/${DATA_NAME}`) {
-            return getDataResponse(ctx)
-        }
-        // Favicon
-        else if(path === "/favicon.ico") {
-            return new Response("", { status: 200 });
-        }
-        // Not Found
-        else {
-            return new Response("Not Found", { status: 404 });
-        }
     }
+    // Handle JS bundle requests
+    else if(path.startsWith("/bundles")) {
+        return getBundleResponse(path.replace("/bundles", ""));
+    }
+    // Favicon
+    else if(path === "/favicon.ico") {
+        return new Response("", { status: 200 });
+    }
+    // Not Found
+    else {
+        return new Response("Not Found", { status: 404 });
+    }
+    // }
 }
 
 async function watchAndCompileFiles(ctx: AppContext) {
     const debouncedCompile = debounce(async () => {
-        await compileCode(ctx)
+        // await compileCode(ctx)
+        createTemplatedIndex("/aa.js");
     }, 250);
 
-    const watcher = Deno.watchFs(ctx.dayDir);
-    for await (const event of watcher) {
-        if(event.kind === "modify" && !event.paths[0].endsWith("~")) {
-            console.log("Modified", event.paths);
+    const watcher = fs.watch(import.meta.dir, (event, filename) => {
+        if(event === "change"){
             debouncedCompile();
+            console.log(`${filename}`);
         }
-    }
+    });
 }
 
 function notifySessions(ctx: AppContext) {
@@ -163,33 +147,28 @@ function notifySessions(ctx: AppContext) {
     }
 }
 
-if(import.meta.main) {
+function main() {
     console.log("AoC Entry Point");
+    // cleanupGenerated();
 
-    const scriptFile = Deno.args[0];
-    validateScript(scriptFile);
-    cleanupGenerated();
-
-    const {day, part} = getPathParts(Deno.args[0]);
     const ctx : AppContext = {
-        part: part,
-        day: day,
-        dayDir: `2024/${day}`,
-        scriptFile: scriptFile,
         sessions: [],
     }
 
-    await compileCode(ctx);
 
+    createTemplatedIndex("/aa.js");
     // noinspection JSIgnoredPromiseFromCall
     watchAndCompileFiles(ctx)
 
-    Deno.serve(
-        { port: 8000 },
-        (req) => {
-           return handleRequestRoute(req, ctx);
-        }
-    );
+
+    console.log("AoC Browser Entry Point");
+    Bun.serve({
+        port: 8000,
+        fetch(req) {
+            return handleRequestRoute(req, ctx);
+        },});
 }
 
-
+if(import.meta.main) {
+    main();
+}

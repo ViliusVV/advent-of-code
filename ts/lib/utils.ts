@@ -60,6 +60,15 @@ function onlyBrowser(body: () => void) {
     }
 }
 
+export function extractPartPaths(path: string) {
+    // /2024/01/01
+    const splitPath = path.split("/");
+    const year = splitPath[1];
+    const day = splitPath[2];
+    const part = splitPath[3];
+    return {year, day, part};
+}
+
 export function setAnswer(answer: string | number, answerName?: string) {
     let msg = "Answer";
     if(answerName) {

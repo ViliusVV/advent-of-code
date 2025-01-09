@@ -1,4 +1,4 @@
-import {browserReadData, setHeader} from "./utils.ts";
+import {extractPartPaths, setHeader} from "./utils";
 
 document.addEventListener("DOMContentLoaded", function () {
     setupReload()
@@ -14,6 +14,13 @@ function loadAocScript() {
     //         aocMain(data);
     //     });
     // });
+
+    // Load aoc part script from the server according to current url
+    const url = new URL(location.href);
+    const path = url.pathname;
+    const {year, day, part} = extractPartPaths(path);
+    const scriptPath = `/bundles/${year}/${day}/part-${part}.js`;
+    setHeader(`Loading script: ${scriptPath}`, 2);
 }
 
 function setupReload() {
