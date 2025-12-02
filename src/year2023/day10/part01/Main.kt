@@ -9,9 +9,7 @@ import utils.models.Coord
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.random.Random
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
 
@@ -27,7 +25,9 @@ class Grid2D<T>(val width: Int = 0,val height: Int = 0, defaultValue: T = null a
         return grid[y][x]
     }
 
-    fun at(pos: Coord): T {
+    fun at(pos: Coord): T? {
+        if(outOfBounds(pos.x, pos.y))
+            return null
         return this[pos.x, pos.y]
     }
 
@@ -97,6 +97,10 @@ enum class Direction(val delta: Coord) {
             WEST -> EAST
         }
     }
+
+    fun isUpOrDown(): Boolean {
+        return this == NORTH || this == SOUTH
+    }
 }
 
 fun main() {
@@ -151,7 +155,7 @@ fun getLoopNodePositions(grid: Grid2D<Char>): List<Coord> {
     return loopNodePositions
 }
 
-private fun Char.getAvailableDirs(): List<Direction> {
+private fun Char?.getAvailableDirs(): List<Direction> {
     return when(this) {
         'L' -> listOf(Direction.NORTH, Direction.EAST)
         'J' -> listOf(Direction.NORTH, Direction.WEST)
